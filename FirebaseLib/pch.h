@@ -31,9 +31,9 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 
-#pragma region Firebase
 #include "firebase/app.h"
 #include "firebase/auth.h"
+#include "firebase/auth/user.h"
 #include "firebase/auth/credential.h"
 #include "firebase/util.h"
 
@@ -68,7 +68,6 @@ using ::firebase::auth::UserMetadata;
 #else
 #define FIREBASE_CONFIG_STRING ""
 #endif  // FIREBASE_CONFIG
-#pragma endregion Firebase
 
 #pragma region Logging
 static void LogMessage(const char* format, ...)
@@ -281,7 +280,12 @@ static void ExpectStringsEqual(const char* test, const char* expected,
 #pragma endregion Expect Functions
 
 #pragma region Custom Classes
-#include "Manager.h"
+#include "FirebaseManager.h"
 #pragma endregion Custom Classes
+
+#pragma region StaticStrings
+extern "C" static const char ManagerSTR[] = "FireBaseManager";
+extern "C" static const char AuthManagerSTR[] = "FireBaseAuthManager";
+#pragma endregion StaticStrings
 
 #endif //PCH_H

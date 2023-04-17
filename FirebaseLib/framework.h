@@ -17,6 +17,8 @@
 #include <string>
 
 #include <direct.h>
+#include <assert.h>
+#include <wtypes.h>
 
 #define chdir _chdir
 

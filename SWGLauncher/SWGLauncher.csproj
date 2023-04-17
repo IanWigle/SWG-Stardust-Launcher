@@ -7,7 +7,17 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <BaseOutputPath>Output\</BaseOutputPath>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <ApplicationIcon>swg_stardust_logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="SWGLauncher.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="swg_stardust_logo.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FirebaseLib\FirebaseLib.vcxproj" />
