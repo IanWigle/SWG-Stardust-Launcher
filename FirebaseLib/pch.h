@@ -35,13 +35,17 @@
 #include "firebase/auth.h"
 #include "firebase/auth/user.h"
 #include "firebase/auth/credential.h"
+#include "firebase/database.h"
+#include "firebase/future.h"
 #include "firebase/util.h"
 
+// General App namespaces
 using ::firebase::App;
 using ::firebase::AppOptions;
 using ::firebase::Future;
 using ::firebase::FutureBase;
 using ::firebase::Variant;
+// Authentication namespaces
 using ::firebase::auth::AdditionalUserInfo;
 using ::firebase::auth::Auth;
 using ::firebase::auth::AuthError;
@@ -62,6 +66,9 @@ using ::firebase::auth::TwitterAuthProvider;
 using ::firebase::auth::User;
 using ::firebase::auth::UserInfoInterface;
 using ::firebase::auth::UserMetadata;
+// Realtime Database namespaces
+using ::firebase::database::Database;
+using ::firebase::database::DatabaseReference;
 
 #ifdef FIREBASE_CONFIG
 #define FIREBASE_CONFIG_STRING TO_STRING(FIREBASE_CONFIG)
@@ -246,6 +253,21 @@ bool WaitForSignOut(firebase::auth::Auth* auth) {
     ProcessEvents(1000);
     return false;
 }
+
+
+static void WaitForCompletion(const firebase::FutureBase& future, const char* name) {
+    while (future.status() == firebase::kFutureStatusPending) {
+        ProcessEvents(100);
+    }
+    if (future.status() != firebase::kFutureStatusComplete) {
+        LogMessage("ERROR: %s returned an invalid result.", name);
+    }
+    else if (future.error() != 0) {
+        LogMessage("ERROR: %s returned error %d: %s", name, future.error(),
+            future.error_message());
+    }
+};
+
 #pragma endregion Wait Calls
 
 #pragma region Expect Functions

@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace SWGLauncher
 { 
@@ -7,7 +8,7 @@ namespace SWGLauncher
     /// <summary>
     /// Wrapper class to make it easier to call Firebase DLL Calls
     /// </summary>
-    internal class FirebaseManager
+    public class FirebaseManager
     {
         public FirebaseManager() { CreateManager(); }
         private void CreateManager() 
@@ -52,24 +53,50 @@ namespace SWGLauncher
             return FirebaseManager_StillSignedIn(manager);
         }
 
+        public void SignInAnon()
+        {
+            FirebaseManager_SignInAnon(manager);
+        }
+
+        public string GetClientVersion()
+        {
+            string ver = "";
+            FirebaseManager_GetClientVersion(manager, s => ver = s);
+            return ver;
+        }
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_Delete(IntPtr value);
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SetEmail(IntPtr value, string email);
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SetPassword(IntPtr value, string str);
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_Register(IntPtr value);
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern void FirebaseManager_GetPassword(IntPtr manager, ResponseDelegate response);
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern void FirebaseManager_GetEmail(IntPtr manager, ResponseDelegate response);
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SignOut(IntPtr value);
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern bool FirebaseManager_StillSignedIn(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_SignInAnon(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        private static extern int FirebaseManager_GetClientVersion(IntPtr manager, ResponseDelegate response);
 
         private static IntPtr manager;
     }

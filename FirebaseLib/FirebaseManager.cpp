@@ -6,11 +6,6 @@ FirebaseLib::FirebaseManager::FirebaseManager(const std::string& email, const st
     m_Email(email),
     m_Password(password)
 {
-#ifdef _DEBUG
-    m_LogErrors = true;
-#else
-    m_LogErrors = false;
-#endif // DEBUG
 }
 
 FirebaseLib::FirebaseManager::FirebaseManager()
@@ -21,6 +16,7 @@ FirebaseLib::FirebaseManager::FirebaseManager()
     m_App = nullptr;
     SetupApp();
     SetupAuth();
+    SetupDatabase();
 }
 
 FirebaseLib::FirebaseManager::~FirebaseManager()
@@ -30,6 +26,9 @@ FirebaseLib::FirebaseManager::~FirebaseManager()
 
 void FirebaseLib::FirebaseManager::Destroy()
 {
+    delete m_Database;
+    m_Database = nullptr;
+
     delete m_Auth;
     m_Auth = nullptr;
 
@@ -40,13 +39,6 @@ void FirebaseLib::FirebaseManager::Destroy()
 void FirebaseLib::FirebaseManager::Register()
 {
     User = m_Auth->CreateUserWithEmailAndPassword(m_Email.c_str(), m_Password.c_str());
-    
-    //WaitForSignInFuture(register_account,
-    //                    "CreateUserWithEmailAndPassword() to create user",
-    //                    kAuthErrorNone,
-    //                    m_Auth);
-    //Future<::firebase::auth::User*> sign_in_anonymously_future = m_Auth->SignInAnonymously();
-    
 }
 
 void FirebaseLib::FirebaseManager::Login()
@@ -78,6 +70,24 @@ bool FirebaseLib::FirebaseManager::StilSignedIn()
     return m_Auth->current_user() != nullptr;
 }
 
+void FirebaseLib::FirebaseManager::SignInAnon()
+{
+    User = m_Auth->SignInAnonymously();
+}
+
+std::string FirebaseLib::FirebaseManager::GetLauncherVersion()
+{
+    std::string version = "";
+    firebase::database::DatabaseReference ref = m_Database->GetReference("ClientData");
+
+    firebase::Future<firebase::database::DataSnapshot> f1 =
+        ref.Child("Version").GetValue();
+
+    WaitForCompletion(f1, "Getting client version");
+
+    return f1.result()->value().string_value();
+}
+
 void FirebaseLib::FirebaseManager::SetupApp()
 {
     ChangeToFileDirectory(
@@ -92,27 +102,39 @@ void FirebaseLib::FirebaseManager::SetupApp()
     LogMessage("Created the Firebase app %x.",
         static_cast<int>(reinterpret_cast<intptr_t>(m_App)));
 
+    void* initialize_targets[] = { &m_Auth, &m_Database };
+
+    const firebase::ModuleInitializer::InitializerFn initializers[] = {
+      [](::firebase::App* app, void* data) {
+        LogMessage("Attempt to initialize Firebase Auth.");
+        void** targets = reinterpret_cast<void**>(data);
+        ::firebase::InitResult result;
+        *reinterpret_cast<::firebase::auth::Auth**>(targets[0]) =
+            ::firebase::auth::Auth::GetAuth(app, &result);
+        return result;
+      },
+      [](::firebase::App* app, void* data) {
+        LogMessage("Attempt to initialize Firebase Database.");
+        void** targets = reinterpret_cast<void**>(data);
+        ::firebase::InitResult result;
+        *reinterpret_cast<::firebase::database::Database**>(targets[1]) =
+            ::firebase::database::Database::GetInstance(app, &result);
+        return result;
+      } };
+
     ::firebase::ModuleInitializer initializer;
-    initializer.Initialize(m_App, nullptr, [](::firebase::App* app, void*) {
-        ::firebase::InitResult init_result;
-        Auth::GetAuth(app, &init_result);
-        return init_result;
-        });
+    initializer.Initialize(m_App, initialize_targets, initializers,
+        sizeof(initializers) / sizeof(initializers[0]));
 
-    while (initializer.InitializeLastResult().status() !=
-        firebase::kFutureStatusComplete) {
-        if (ProcessEvents(100)) return;  // exit if requested
-    }
-
-    if (initializer.InitializeLastResult().error() != 0) {
-        LogMessage("Failed to initialize Auth: %s",
-            initializer.InitializeLastResult().error_message());
-        ProcessEvents(2000);
-        return;
-    }
+    WaitForCompletion(initializer.InitializeLastResult(), "Initialize");
 }
 
 void FirebaseLib::FirebaseManager::SetupAuth()
 {
     m_Auth = Auth::GetAuth(m_App);
+}
+
+void FirebaseLib::FirebaseManager::SetupDatabase()
+{
+    m_SavedUrl = m_Database->url();
 }

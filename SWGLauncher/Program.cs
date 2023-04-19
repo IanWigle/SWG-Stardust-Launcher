@@ -23,6 +23,10 @@ namespace SWGLauncher
             ApplicationConfiguration.Initialize();
 
             firebase = new FirebaseManager();
+            firebase.SignInAnon();
+            //firebase.TestData("Hello");
+            //string testStr = firebase.TestGetUrl();
+            string version = firebase.GetClientVersion();
 
             // Sign out if session is still running
             if (firebase.SignedIn() == true)

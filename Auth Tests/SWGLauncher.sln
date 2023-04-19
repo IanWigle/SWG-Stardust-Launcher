@@ -7,7 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Auth Tests", "Auth Tests.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FirebaseLib", "..\FirebaseLib\FirebaseLib.vcxproj", "{7BCED1B9-9EDB-47B6-A480-8203F0A1276B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWGLauncher", "..\SWGLauncher\SWGLauncher.csproj", "{4C04F97D-9742-4888-9333-9FF92DC04459}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWGLauncher", "..\SWGLauncher\SWGLauncher.csproj", "{4C04F97D-9742-4888-9333-9FF92DC04459}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FirebaseWrapper", "..\FirebaseWrapper\FirebaseWrapper.csproj", "{5298817A-10BC-4D68-9947-013D280EE03C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DatabaseTests", "..\DatabaseTests\DatabaseTests.vcxproj", "{4BE699D0-5F3B-4A21-A124-401512DD5B1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +59,30 @@ Global
 		{4C04F97D-9742-4888-9333-9FF92DC04459}.Release|x64.Build.0 = Release|Any CPU
 		{4C04F97D-9742-4888-9333-9FF92DC04459}.Release|x86.ActiveCfg = Release|Any CPU
 		{4C04F97D-9742-4888-9333-9FF92DC04459}.Release|x86.Build.0 = Release|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Debug|x64.Build.0 = Debug|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Debug|x86.Build.0 = Debug|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Release|x64.ActiveCfg = Release|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Release|x64.Build.0 = Release|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Release|x86.ActiveCfg = Release|Any CPU
+		{5298817A-10BC-4D68-9947-013D280EE03C}.Release|x86.Build.0 = Release|Any CPU
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Debug|Any CPU.Build.0 = Debug|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Debug|x64.ActiveCfg = Debug|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Debug|x64.Build.0 = Debug|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Debug|x86.ActiveCfg = Debug|Win32
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Debug|x86.Build.0 = Debug|Win32
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Release|Any CPU.ActiveCfg = Release|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Release|Any CPU.Build.0 = Release|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Release|x64.ActiveCfg = Release|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Release|x64.Build.0 = Release|x64
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Release|x86.ActiveCfg = Release|Win32
+		{4BE699D0-5F3B-4A21-A124-401512DD5B1D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

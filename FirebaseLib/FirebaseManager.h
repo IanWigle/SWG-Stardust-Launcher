@@ -30,21 +30,27 @@ namespace FirebaseLib
 		inline Auth* GetAuth() { return m_Auth; }
 
 		bool StilSignedIn();
+
+		// Database functions;
+		void SignInAnon();
+		std::string GetLauncherVersion();
 		
 	private:
 		// General App Stuff
 		void SetupApp();
 		App* m_App = nullptr;
+		Future<User*> User;
 
 		// Auth Stuff
 		void SetupAuth();
 		Auth* m_Auth;
-		
-		bool m_LogErrors;
 		std::string m_Email;
 		std::string m_Password;
-		
-		Future<User*> User;
+
+		// Database Stuff
+		void SetupDatabase();
+		Database* m_Database;
+		std::string m_SavedUrl;		
 	};
 
 	EXPIMP_TEMPLATE template class FirebaseLib_API std::vector<FirebaseManager>;
@@ -92,6 +98,14 @@ namespace FirebaseLib
 		__declspec(dllexport) void FirebaseManager_SignOut(FirebaseManager* manager)
 		{
 			manager->GetAuth()->SignOut();
+		}
+		__declspec(dllexport) void FirebaseManager_SignInAnon(FirebaseManager* manager)
+		{
+			manager->SignInAnon();
+		}
+		__declspec(dllexport) void __stdcall FirebaseManager_GetClientVersion(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		{
+			respond(manager->GetLauncherVersion().c_str());
 		}
 	}
 }
