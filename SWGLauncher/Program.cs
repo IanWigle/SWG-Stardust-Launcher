@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Diagnostics;
 
 namespace SWGLauncher
 {
@@ -9,6 +10,9 @@ namespace SWGLauncher
         static FirebaseManager firebase = null;
 
         static public FirebaseManager GetFirebaseManager() => firebase;
+
+        public const int Launcherversion = 2;
+        public static int FirebaseLauncherVersion { get; private set; }
 
         /// <summary>
         ///  The main entry point for the application.
@@ -24,17 +28,20 @@ namespace SWGLauncher
 
             firebase = new FirebaseManager();
             firebase.SignInAnon();
-            //firebase.TestData("Hello");
-            //string testStr = firebase.TestGetUrl();
-            string version = firebase.GetClientVersion();
-
-            // Sign out if session is still running
-            if (firebase.SignedIn() == true)
-                firebase.SignOut();
-
+            FirebaseLauncherVersion = int.Parse(firebase.GetClientVersion());
+            Debug.WriteLine($"Current clientside client version is {Launcherversion}");
+            Debug.WriteLine($"The most up to date on firebase is {FirebaseLauncherVersion}");
+            
             Application.Run(new Form1());
 
-            firebase.SignOut();
+            if(firebase.GetAccountType() == AccountType.Anonymous)
+            {
+                firebase.DeleteCurrentAccount();
+            }
+            else
+            {
+                firebase.SignOut();
+            }
             firebase.DeleteManager();
         }
     }

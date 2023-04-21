@@ -45,6 +45,11 @@ void FirebaseLib::FirebaseManager::Login()
 {
 }
 
+void FirebaseLib::FirebaseManager::SignOut()
+{
+    m_Auth->SignOut();
+}
+
 std::string& FirebaseLib::FirebaseManager::GetEmail()
 {
     return m_Email;
@@ -70,9 +75,36 @@ bool FirebaseLib::FirebaseManager::StilSignedIn()
     return m_Auth->current_user() != nullptr;
 }
 
+void FirebaseLib::FirebaseManager::DeleteCurrentAccount()
+{
+    firebase::auth::User* user_to_delete = m_Auth->current_user();
+
+    Future<void> delete_future = user_to_delete->Delete();
+    WaitForFuture(delete_future, "FirebaseManager::DeleteCurrentAccount()", kAuthErrorNone);
+}
+
 void FirebaseLib::FirebaseManager::SignInAnon()
 {
     User = m_Auth->SignInAnonymously();
+}
+
+int FirebaseLib::FirebaseManager::GetAccountType()
+{
+    if (m_Auth->current_user() == nullptr)
+        return 0;
+    else
+    {
+        if (m_Auth->current_user()->is_anonymous())
+        {
+            return 1;
+        }
+        else if (m_Auth->current_user()->is_email_verified())
+        {
+            return 2;
+        }
+    }
+
+    return 0;
 }
 
 std::string FirebaseLib::FirebaseManager::GetLauncherVersion()
@@ -137,4 +169,5 @@ void FirebaseLib::FirebaseManager::SetupAuth()
 void FirebaseLib::FirebaseManager::SetupDatabase()
 {
     m_SavedUrl = m_Database->url();
+    m_Database->set_persistence_enabled(false);
 }

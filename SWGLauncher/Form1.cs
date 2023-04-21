@@ -13,6 +13,26 @@ namespace SWGLauncher
         public Form1()
         {
             InitializeComponent();
+
+            if (Program.Launcherversion < Program.FirebaseLauncherVersion)
+            {
+                switch (MessageBox.Show("This launcher is out of date, would you like to download the new one?", "Update!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
+                {
+                    case DialogResult.Yes:
+                        {
+                            break;
+                        }
+                    case DialogResult.No:
+                        {
+                            break;
+                        }
+                }
+            }
+            else if (Program.Launcherversion > Program.FirebaseLauncherVersion)
+            {
+                MessageBox.Show("Somehow, this client is registered as newever than what is on the server. Please get a valid version.", "Hold Up", MessageBoxButtons.OK, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                Close();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

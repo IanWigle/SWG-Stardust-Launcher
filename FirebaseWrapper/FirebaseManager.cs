@@ -5,6 +5,14 @@ namespace SWGLauncher
 { 
     delegate void ResponseDelegate(string s);
 
+    public enum AccountType
+    {
+        Invalid = 0,
+        Anonymous,
+        VerifiedEmail
+    }
+
+
     /// <summary>
     /// Wrapper class to make it easier to call Firebase DLL Calls
     /// </summary>
@@ -65,6 +73,30 @@ namespace SWGLauncher
             return ver;
         }
 
+        public void DeleteCurrentAccount()
+        {
+            FirebaseManager_DeleteCurrentAccount(manager);
+        }
+
+        public AccountType GetAccountType()
+        {
+            switch(FirebaseManager_GetAccountType(manager))
+            {
+                case 1:
+                    {
+                        return AccountType.Anonymous;
+                    }
+                case 2:
+                    {
+                        return AccountType.VerifiedEmail;
+                    }
+                default:
+                    {
+                        return AccountType.Invalid;
+                    }
+            }
+        }
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
 
@@ -97,6 +129,12 @@ namespace SWGLauncher
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern int FirebaseManager_GetClientVersion(IntPtr manager, ResponseDelegate response);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_DeleteCurrentAccount(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int FirebaseManager_GetAccountType(IntPtr value);
 
         private static IntPtr manager;
     }

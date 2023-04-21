@@ -18,6 +18,7 @@ namespace FirebaseLib
 		void Register();
 
 		void Login();
+		void SignOut();
 
 		std::string& GetEmail();
 		std::string& GetPassword();
@@ -31,8 +32,11 @@ namespace FirebaseLib
 
 		bool StilSignedIn();
 
-		// Database functions;
+		void DeleteCurrentAccount();
+
 		void SignInAnon();
+		int GetAccountType();
+		// Database functions;
 		std::string GetLauncherVersion();
 		
 	private:
@@ -106,6 +110,15 @@ namespace FirebaseLib
 		__declspec(dllexport) void __stdcall FirebaseManager_GetClientVersion(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetLauncherVersion().c_str());
+		}
+		__declspec(dllexport) void FirebaseManager_DeleteCurrentAccount(FirebaseManager* manager)
+		{
+			manager->DeleteCurrentAccount();
+		}
+		__declspec(dllexport) int FirebaseManager_GetAccountType(FirebaseManager* manager/*, LPEXTFUNCRESPOND respond*/)
+		{
+			//respond(manager->GetEmail().c_str());
+			return manager->GetAccountType();
 		}
 	}
 }
