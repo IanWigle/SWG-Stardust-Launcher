@@ -20,6 +20,9 @@
 #include <assert.h>
 #include <wtypes.h>
 
+#include <locale>
+#include <codecvt>
+
 #define chdir _chdir
 
 #define TO_STRING_EXPAND(X) #X

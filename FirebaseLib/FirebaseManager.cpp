@@ -17,6 +17,7 @@ FirebaseLib::FirebaseManager::FirebaseManager()
     SetupApp();
     SetupAuth();
     SetupDatabase();
+    SetupCloudStorage();
 }
 
 FirebaseLib::FirebaseManager::~FirebaseManager()
@@ -26,6 +27,9 @@ FirebaseLib::FirebaseManager::~FirebaseManager()
 
 void FirebaseLib::FirebaseManager::Destroy()
 {
+    delete m_Storage;
+    m_Storage = nullptr;
+
     delete m_Database;
     m_Database = nullptr;
 
@@ -120,6 +124,28 @@ std::string FirebaseLib::FirebaseManager::GetLauncherVersion()
     return f1.result()->value().string_value();
 }
 
+void FirebaseLib::FirebaseManager::DownloadLauncher()
+{
+    const size_t BufferSize = 14000;
+    char buffer[BufferSize];
+
+    TCHAR DirBuffer[MAX_PATH] = { 0 };
+    GetModuleFileName(NULL, DirBuffer, MAX_PATH);    
+    
+    using convert_type = std::codecvt_utf8<wchar_t>;
+    std::wstring_convert<convert_type, wchar_t> converter;
+    
+    std::string directory = converter.to_bytes(std::wstring(DirBuffer));
+    std::string::size_type pos = directory.find_last_of("\\/");
+    directory = directory.substr(0, pos);
+    
+    directory += "\\NewFiles";
+    
+    StorageReference fileRef = m_CloudRootReference.Child("SWGLauncher.zip");
+    Future<size_t> fileFuture = fileRef.GetFile(".\\SWGLauncher.zip", nullptr, nullptr);
+    WaitForCompletion(fileFuture, "Download new Launcher");
+}
+
 void FirebaseLib::FirebaseManager::SetupApp()
 {
     ChangeToFileDirectory(
@@ -134,7 +160,7 @@ void FirebaseLib::FirebaseManager::SetupApp()
     LogMessage("Created the Firebase app %x.",
         static_cast<int>(reinterpret_cast<intptr_t>(m_App)));
 
-    void* initialize_targets[] = { &m_Auth, &m_Database };
+    void* initialize_targets[] = { &m_Auth, &m_Database, &m_Storage };
 
     const firebase::ModuleInitializer::InitializerFn initializers[] = {
       [](::firebase::App* app, void* data) {
@@ -152,7 +178,19 @@ void FirebaseLib::FirebaseManager::SetupApp()
         *reinterpret_cast<::firebase::database::Database**>(targets[1]) =
             ::firebase::database::Database::GetInstance(app, &result);
         return result;
-      } };
+      },
+      [](::firebase::App* app, void* data) {
+            LogMessage("Attempt to initialize Cloud Storage.");
+            void** targets = reinterpret_cast<void**>(data);
+            ::firebase::InitResult result;
+            firebase::storage::Storage* storage =
+                firebase::storage::Storage::GetInstance(app, kStorageUrl, &result);
+            *reinterpret_cast<::firebase::storage::Storage**>(targets[2]) = storage;
+            LogMessage("Initialized storage with URL %s, %s",
+                       kStorageUrl ? kStorageUrl : "(null)",
+                       storage->url().c_str());
+            return result;
+        } };
 
     ::firebase::ModuleInitializer initializer;
     initializer.Initialize(m_App, initialize_targets, initializers,
@@ -170,4 +208,9 @@ void FirebaseLib::FirebaseManager::SetupDatabase()
 {
     m_SavedUrl = m_Database->url();
     m_Database->set_persistence_enabled(false);
+}
+
+void FirebaseLib::FirebaseManager::SetupCloudStorage()
+{
+    m_CloudRootReference = m_Storage->GetReference(RootString);
 }

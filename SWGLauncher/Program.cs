@@ -11,7 +11,7 @@ namespace SWGLauncher
 
         static public FirebaseManager GetFirebaseManager() => firebase;
 
-        public const int Launcherversion = 2;
+        public const int Launcherversion = 1;
         public static int FirebaseLauncherVersion { get; private set; }
 
         /// <summary>

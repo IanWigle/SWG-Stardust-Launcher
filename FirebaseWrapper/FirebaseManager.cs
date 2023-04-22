@@ -97,6 +97,11 @@ namespace SWGLauncher
             }
         }
 
+        public void DownloadClient()
+        {
+            FirebaseManager_DownloadSWGLauncher(manager);
+        }
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
 
@@ -135,6 +140,9 @@ namespace SWGLauncher
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FirebaseManager_GetAccountType(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_DownloadSWGLauncher(IntPtr value);
 
         private static IntPtr manager;
     }

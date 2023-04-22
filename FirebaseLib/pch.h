@@ -38,6 +38,7 @@
 #include "firebase/database.h"
 #include "firebase/future.h"
 #include "firebase/util.h"
+#include "firebase/storage.h"
 
 // General App namespaces
 using ::firebase::App;
@@ -51,24 +52,21 @@ using ::firebase::auth::Auth;
 using ::firebase::auth::AuthError;
 using ::firebase::auth::Credential;
 using ::firebase::auth::EmailAuthProvider;
-using ::firebase::auth::FacebookAuthProvider;
-using ::firebase::auth::GitHubAuthProvider;
-using ::firebase::auth::GoogleAuthProvider;
 using ::firebase::auth::kAuthErrorFailure;
 using ::firebase::auth::kAuthErrorInvalidCredential;
 using ::firebase::auth::kAuthErrorInvalidProviderId;
 using ::firebase::auth::kAuthErrorNone;
 using ::firebase::auth::OAuthProvider;
-using ::firebase::auth::PhoneAuthProvider;
-using ::firebase::auth::PlayGamesAuthProvider;
 using ::firebase::auth::SignInResult;
-using ::firebase::auth::TwitterAuthProvider;
 using ::firebase::auth::User;
 using ::firebase::auth::UserInfoInterface;
 using ::firebase::auth::UserMetadata;
 // Realtime Database namespaces
 using ::firebase::database::Database;
 using ::firebase::database::DatabaseReference;
+// Cloud Storage namespaces
+using ::firebase::storage::Storage;
+using ::firebase::storage::StorageReference;
 
 #ifdef FIREBASE_CONFIG
 #define FIREBASE_CONFIG_STRING TO_STRING(FIREBASE_CONFIG)

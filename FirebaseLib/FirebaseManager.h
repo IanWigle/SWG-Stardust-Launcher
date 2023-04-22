@@ -4,7 +4,7 @@
 
 namespace FirebaseLib
 {
-	class ::firebase::App;
+	static const char* kStorageUrl = nullptr;
 
 	class FirebaseLib_API FirebaseManager
 	{
@@ -12,8 +12,6 @@ namespace FirebaseLib
 		FirebaseManager(const std::string& email, const std::string& password);
 		explicit FirebaseManager();
 		~FirebaseManager();
-
-		virtual void Destroy();
 
 		void Register();
 
@@ -27,34 +25,46 @@ namespace FirebaseLib
 		void SetEmail(const char* userName);
 		void SetPassword(const char* password);
 
-		inline App* GetApp() { return m_App; }
-		inline Auth* GetAuth() { return m_Auth; }
-
 		bool StilSignedIn();
 
 		void DeleteCurrentAccount();
 
 		void SignInAnon();
 		int GetAccountType();
+
 		// Database functions;
 		std::string GetLauncherVersion();
-		
+
+		// Cloud Storage functions;
+		void DownloadLauncher();
+
 	private:
+		virtual void Destroy();
+
 		// General App Stuff
 		void SetupApp();
 		App* m_App = nullptr;
 		Future<User*> User;
+		inline App* GetApp() { return m_App; }
 
 		// Auth Stuff
 		void SetupAuth();
 		Auth* m_Auth;
 		std::string m_Email;
 		std::string m_Password;
+		inline Auth* GetAuth() { return m_Auth; }
 
 		// Database Stuff
 		void SetupDatabase();
 		Database* m_Database;
 		std::string m_SavedUrl;		
+
+		// Cloud Storage
+		void SetupCloudStorage();
+		Storage* m_Storage;
+		StorageReference m_CloudRootReference;
+		std::string RootString = "Root";
+		std::string LauncherString = "SWGLauncher.zip";
 	};
 
 	EXPIMP_TEMPLATE template class FirebaseLib_API std::vector<FirebaseManager>;
@@ -101,7 +111,7 @@ namespace FirebaseLib
 		}
 		__declspec(dllexport) void FirebaseManager_SignOut(FirebaseManager* manager)
 		{
-			manager->GetAuth()->SignOut();
+			manager->SignOut();
 		}
 		__declspec(dllexport) void FirebaseManager_SignInAnon(FirebaseManager* manager)
 		{
@@ -115,10 +125,13 @@ namespace FirebaseLib
 		{
 			manager->DeleteCurrentAccount();
 		}
-		__declspec(dllexport) int FirebaseManager_GetAccountType(FirebaseManager* manager/*, LPEXTFUNCRESPOND respond*/)
+		__declspec(dllexport) int FirebaseManager_GetAccountType(FirebaseManager* manager)
 		{
-			//respond(manager->GetEmail().c_str());
 			return manager->GetAccountType();
+		}
+		__declspec(dllexport) void FirebaseManager_DownloadSWGLauncher(FirebaseManager* manager)
+		{
+			manager->DownloadLauncher();
 		}
 	}
 }
