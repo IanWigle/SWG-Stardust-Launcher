@@ -8,10 +8,11 @@ namespace SWGLauncher
     internal static class Program
     {
         static FirebaseManager firebase = null;
+        static AudioManager audioManager = null;
 
         static public FirebaseManager GetFirebaseManager() => firebase;
 
-        public const int Launcherversion = 1;
+        public const int Launcherversion = 2;
         public static int FirebaseLauncherVersion { get; private set; }
 
         /// <summary>
@@ -25,6 +26,8 @@ namespace SWGLauncher
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             ApplicationConfiguration.Initialize();
+
+            audioManager = new AudioManager($"{Directory.GetCurrentDirectory()}\\Resources\\Star-Dust.wav");
 
             firebase = new FirebaseManager();
             firebase.SignInAnon();

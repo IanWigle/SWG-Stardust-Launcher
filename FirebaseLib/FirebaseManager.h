@@ -13,7 +13,7 @@ namespace FirebaseLib
 		explicit FirebaseManager();
 		~FirebaseManager();
 
-		void Register();
+		bool Register();
 
 		void Login();
 		void SignOut();
@@ -32,6 +32,9 @@ namespace FirebaseLib
 		void SignInAnon();
 		int GetAccountType();
 
+		inline AuthError GetLastAuthError() { return LastAuthError; }
+		inline std::string GetLastErrorString() { return LastErrorString; }
+
 		// Database functions;
 		std::string GetLauncherVersion();
 
@@ -44,7 +47,7 @@ namespace FirebaseLib
 		// General App Stuff
 		void SetupApp();
 		App* m_App = nullptr;
-		Future<User*> User;
+		Future<User*> SignedUser;
 		inline App* GetApp() { return m_App; }
 
 		// Auth Stuff
@@ -53,6 +56,9 @@ namespace FirebaseLib
 		std::string m_Email;
 		std::string m_Password;
 		inline Auth* GetAuth() { return m_Auth; }
+		AuthError LastAuthError;
+		std::string LastErrorString;
+		Future<User*> AnonUser;
 
 		// Database Stuff
 		void SetupDatabase();
@@ -93,9 +99,9 @@ namespace FirebaseLib
 		{ 
 			manager->SetPassword(password); 
 		}
-		__declspec(dllexport) void FirebaseManager_Register(FirebaseManager* manager) 
+		__declspec(dllexport) bool FirebaseManager_Register(FirebaseManager* manager) 
 		{ 
-			manager->Register(); 
+			return manager->Register(); 
 		}
 		__declspec(dllexport) void __stdcall FirebaseManager_GetPassword(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
@@ -132,6 +138,14 @@ namespace FirebaseLib
 		__declspec(dllexport) void FirebaseManager_DownloadSWGLauncher(FirebaseManager* manager)
 		{
 			manager->DownloadLauncher();
+		}
+		__declspec(dllexport) int FirebaseManager_GetLastAuthError(FirebaseManager* manager)
+		{
+			return manager->GetLastAuthError();
+		}
+		__declspec(dllexport) void __stdcall FirebaseManager_GetLastError(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		{
+			respond(manager->GetLastErrorString().c_str());
 		}
 	}
 }

@@ -35,9 +35,9 @@ namespace SWGLauncher
         {
             FirebaseManager_SetPassword(manager, password);
         }
-        public void Register()
+        public bool Register()
         {
-            FirebaseManager_Register(manager);
+            return FirebaseManager_Register(manager);
         }
         public string GetPassword()
         {
@@ -102,6 +102,13 @@ namespace SWGLauncher
             FirebaseManager_DownloadSWGLauncher(manager);
         }
 
+        public string GetLastError()
+        {
+            string error = "";
+            FirebaseManager_GetLastError(manager, s =>  error = s);
+            return error;
+        }
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
 
@@ -115,7 +122,7 @@ namespace SWGLauncher
         private static extern void FirebaseManager_SetPassword(IntPtr value, string str);
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void FirebaseManager_Register(IntPtr value);
+        private static extern bool FirebaseManager_Register(IntPtr value);
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern void FirebaseManager_GetPassword(IntPtr manager, ResponseDelegate response);
@@ -143,6 +150,9 @@ namespace SWGLauncher
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_DownloadSWGLauncher(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_GetLastError(IntPtr value, ResponseDelegate response);
 
         private static IntPtr manager;
     }

@@ -40,9 +40,25 @@ void FirebaseLib::FirebaseManager::Destroy()
     m_App = nullptr;
 }
 
-void FirebaseLib::FirebaseManager::Register()
+bool FirebaseLib::FirebaseManager::Register()
 {
-    User = m_Auth->CreateUserWithEmailAndPassword(m_Email.c_str(), m_Password.c_str());
+    Future<::firebase::auth::User*> sign_in_future =
+        m_Auth->CreateUserWithEmailAndPassword(m_Email.c_str(), m_Password.c_str());
+    WaitForFuture(sign_in_future, "FirebaseManager::Register()", kAuthErrorNone);
+    m_Auth->current_user()->SendEmailVerification();
+
+    const AuthError error = static_cast<AuthError>(sign_in_future.error());
+    switch (error)
+    {
+    case kAuthErrorNone:
+        LastAuthError = kAuthErrorNone;
+        SignedUser = sign_in_future;
+        return true;
+    default:
+        LastErrorString = sign_in_future.error_message();
+        LastAuthError = error;
+        return false;
+    }
 }
 
 void FirebaseLib::FirebaseManager::Login()
@@ -89,7 +105,7 @@ void FirebaseLib::FirebaseManager::DeleteCurrentAccount()
 
 void FirebaseLib::FirebaseManager::SignInAnon()
 {
-    User = m_Auth->SignInAnonymously();
+    AnonUser = m_Auth->SignInAnonymously();
 }
 
 int FirebaseLib::FirebaseManager::GetAccountType()

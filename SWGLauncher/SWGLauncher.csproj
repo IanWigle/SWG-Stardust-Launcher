@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -20,8 +20,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FirebaseLib\FirebaseLib.vcxproj" />
     <ProjectReference Include="..\FirebaseWrapper\FirebaseWrapper.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)..\Resources&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Resources\&quot; /Y /S&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Resources\google-services.json&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)..\Resources\google-services.json&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(ProjectDir)..\Resources\google-services.json&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Updater\&quot; /Y /I" />
+  </Target>
 
 </Project>

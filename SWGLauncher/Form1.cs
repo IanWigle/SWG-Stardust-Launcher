@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text;
 
 namespace SWGLauncher
@@ -15,7 +17,12 @@ namespace SWGLauncher
         {
             InitializeComponent();
 
+            string[] files = Directory.GetFiles($"{Directory.GetCurrentDirectory()}\\Resources", "*.jpg");
+            Random random = new Random();
 
+            string file = files[random.Next(0, files.Length)];
+
+            pictureBox1.Image = Image.FromFile(file);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -23,8 +30,8 @@ namespace SWGLauncher
             if (Program.GetFirebaseManager().SignedIn() == true)
                 Program.GetFirebaseManager().SignOut();
 
-            string email = UserTextBox.Text;
-            string password = PasswordTextBox.Text;
+            string email = RegisterEmailBox.Text;
+            string password = RegisterPasswordBox.Text;
 
             Program.GetFirebaseManager().SetEmail(email);
             Program.GetFirebaseManager().SetPassword(password);
@@ -32,10 +39,14 @@ namespace SWGLauncher
             string getpassword = "";
             string getusername = "";
 
+            // debug checks
             getpassword = Program.GetFirebaseManager().GetPassword();
             getusername = Program.GetFirebaseManager().GetEmail();
 
-            Program.GetFirebaseManager().Register();
+            if (!Program.GetFirebaseManager().Register())
+            {
+                MessageBox.Show($"{Program.GetFirebaseManager().GetLastError()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+            }
             System.Threading.Thread.Sleep(2000);
         }
 
@@ -60,9 +71,14 @@ namespace SWGLauncher
             }
             else if (Program.Launcherversion > Program.FirebaseLauncherVersion)
             {
-                MessageBox.Show("Somehow, this client is registered as newever than what is on the server. Please get a valid version.", "Hold Up", MessageBoxButtons.OK, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                MessageBox.Show("Somehow, this client is registered as newer than what is on the server. Please get a valid version.", "Hold Up", MessageBoxButtons.OK, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
                 Close();
             }
+        }
+
+        private void pictureBox2_Paint(object sender, PaintEventArgs e)
+        {
+            // e.Graphics.DrawImage(Image.FromFile($"{Directory.GetCurrentDirectory()}\\Resources\\Project_Stardust.png"), 0, 0);
         }
     }
 }

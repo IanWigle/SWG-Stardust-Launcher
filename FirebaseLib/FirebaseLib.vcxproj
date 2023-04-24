@@ -135,8 +135,8 @@
       <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows10.0.17763.0" /Y /I
-xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SWGStardustUpdater\bin\$(Configuration)\net7.0-windows10.0.17763.0" /Y /I</Command>
+      <Command>xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows\" /Y /I
+xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows\Updater\" /Y /I</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -163,7 +163,8 @@ xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SW
       <AdditionalDependencies>advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;shell32.lib;iphlpapi.lib;psapi.lib;userenv.lib;firebase_admob.lib;firebase_app.lib;firebase_auth.lib;firebase_database.lib;firebase_dynamic_links.lib;firebase_firestore.lib;firebase_functions.lib;firebase_gma.lib;firebase_installations.lib;firebase_messaging.lib;firebase_remote_config.lib;firebase_storage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows10.0.17763.0" /Y /I</Command>
+      <Command>xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows\" /Y /I
+xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows\Updater\" /Y /I</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

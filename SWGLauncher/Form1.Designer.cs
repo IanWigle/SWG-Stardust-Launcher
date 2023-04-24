@@ -29,158 +29,218 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            UserTextBox = new TextBox();
-            PasswordTextBox = new TextBox();
-            button1 = new Button();
-            groupBox1 = new GroupBox();
+            tabControl1 = new TabControl();
+            Login = new TabPage();
+            LoginButton = new Button();
+            groupBox5 = new GroupBox();
+            textBox2 = new TextBox();
+            groupBox4 = new GroupBox();
+            textBox1 = new TextBox();
+            tabPage2 = new TabPage();
             groupBox2 = new GroupBox();
-            groupBox3 = new GroupBox();
-            splitContainer1 = new SplitContainer();
-            splitContainer2 = new SplitContainer();
-            groupBox1.SuspendLayout();
+            RegisterPasswordBox = new TextBox();
+            RegisterAccountButton = new Button();
+            groupBox1 = new GroupBox();
+            RegisterEmailBox = new TextBox();
+            pictureBox1 = new PictureBox();
+            tabControl1.SuspendLayout();
+            Login.SuspendLayout();
+            groupBox5.SuspendLayout();
+            groupBox4.SuspendLayout();
+            tabPage2.SuspendLayout();
             groupBox2.SuspendLayout();
-            groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
-            splitContainer1.Panel2.SuspendLayout();
-            splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
-            splitContainer2.Panel1.SuspendLayout();
-            splitContainer2.Panel2.SuspendLayout();
-            splitContainer2.SuspendLayout();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
-            // UserTextBox
+            // tabControl1
             // 
-            UserTextBox.Dock = DockStyle.Fill;
-            UserTextBox.Location = new Point(3, 19);
-            UserTextBox.Name = "UserTextBox";
-            UserTextBox.Size = new Size(207, 23);
-            UserTextBox.TabIndex = 0;
+            tabControl1.Controls.Add(Login);
+            tabControl1.Controls.Add(tabPage2);
+            tabControl1.Location = new Point(732, 320);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(228, 197);
+            tabControl1.TabIndex = 0;
             // 
-            // PasswordTextBox
+            // Login
             // 
-            PasswordTextBox.Dock = DockStyle.Fill;
-            PasswordTextBox.Location = new Point(3, 19);
-            PasswordTextBox.Name = "PasswordTextBox";
-            PasswordTextBox.Size = new Size(207, 23);
-            PasswordTextBox.TabIndex = 1;
+            Login.BackColor = SystemColors.Control;
+            Login.Controls.Add(LoginButton);
+            Login.Controls.Add(groupBox5);
+            Login.Controls.Add(groupBox4);
+            Login.Location = new Point(4, 24);
+            Login.Name = "Login";
+            Login.Padding = new Padding(3);
+            Login.Size = new Size(220, 169);
+            Login.TabIndex = 0;
+            Login.Text = "Login";
             // 
-            // button1
+            // LoginButton
             // 
-            button1.Dock = DockStyle.Fill;
-            button1.Location = new Point(0, 0);
-            button1.Name = "button1";
-            button1.Size = new Size(219, 52);
-            button1.TabIndex = 2;
-            button1.Text = "Make Account";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            LoginButton.Location = new Point(4, 116);
+            LoginButton.Name = "LoginButton";
+            LoginButton.Size = new Size(213, 49);
+            LoginButton.TabIndex = 2;
+            LoginButton.Text = "Login";
+            LoginButton.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
+            // groupBox5
             // 
-            groupBox1.Controls.Add(UserTextBox);
-            groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(0, 0);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(213, 62);
-            groupBox1.TabIndex = 6;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Email";
+            groupBox5.BackColor = SystemColors.Control;
+            groupBox5.Controls.Add(textBox2);
+            groupBox5.Location = new Point(4, 61);
+            groupBox5.Name = "groupBox5";
+            groupBox5.Size = new Size(213, 49);
+            groupBox5.TabIndex = 1;
+            groupBox5.TabStop = false;
+            groupBox5.Text = "Password";
+            // 
+            // textBox2
+            // 
+            textBox2.Location = new Point(4, 20);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new Size(207, 23);
+            textBox2.TabIndex = 1;
+            // 
+            // groupBox4
+            // 
+            groupBox4.BackColor = SystemColors.Control;
+            groupBox4.Controls.Add(textBox1);
+            groupBox4.Location = new Point(4, 9);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(213, 49);
+            groupBox4.TabIndex = 0;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Email";
+            // 
+            // textBox1
+            // 
+            textBox1.BackColor = SystemColors.Window;
+            textBox1.Location = new Point(4, 19);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(207, 23);
+            textBox1.TabIndex = 0;
+            // 
+            // tabPage2
+            // 
+            tabPage2.BackColor = SystemColors.Control;
+            tabPage2.Controls.Add(groupBox2);
+            tabPage2.Controls.Add(RegisterAccountButton);
+            tabPage2.Controls.Add(groupBox1);
+            tabPage2.Location = new Point(4, 24);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(220, 190);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "Register";
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(PasswordTextBox);
-            groupBox2.Dock = DockStyle.Fill;
-            groupBox2.Location = new Point(0, 0);
+            groupBox2.BackColor = SystemColors.Control;
+            groupBox2.Controls.Add(RegisterPasswordBox);
+            groupBox2.Location = new Point(4, 61);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(213, 62);
-            groupBox2.TabIndex = 6;
+            groupBox2.Size = new Size(213, 48);
+            groupBox2.TabIndex = 9;
             groupBox2.TabStop = false;
             groupBox2.Text = "Password";
             // 
-            // groupBox3
+            // RegisterPasswordBox
             // 
-            groupBox3.Controls.Add(splitContainer1);
-            groupBox3.Dock = DockStyle.Fill;
-            groupBox3.Location = new Point(0, 0);
-            groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(219, 150);
-            groupBox3.TabIndex = 7;
-            groupBox3.TabStop = false;
+            RegisterPasswordBox.Location = new Point(3, 19);
+            RegisterPasswordBox.Name = "RegisterPasswordBox";
+            RegisterPasswordBox.Size = new Size(207, 23);
+            RegisterPasswordBox.TabIndex = 1;
             // 
-            // splitContainer1
+            // RegisterAccountButton
             // 
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(3, 19);
-            splitContainer1.Name = "splitContainer1";
-            splitContainer1.Orientation = Orientation.Horizontal;
+            RegisterAccountButton.Location = new Point(4, 115);
+            RegisterAccountButton.Name = "RegisterAccountButton";
+            RegisterAccountButton.Size = new Size(213, 49);
+            RegisterAccountButton.TabIndex = 11;
+            RegisterAccountButton.Text = "Make Account";
+            RegisterAccountButton.UseVisualStyleBackColor = true;
+            RegisterAccountButton.Click += button1_Click;
             // 
-            // splitContainer1.Panel1
+            // groupBox1
             // 
-            splitContainer1.Panel1.Controls.Add(groupBox1);
+            groupBox1.BackColor = SystemColors.Control;
+            groupBox1.Controls.Add(RegisterEmailBox);
+            groupBox1.Location = new Point(3, 6);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(213, 49);
+            groupBox1.TabIndex = 10;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Email";
             // 
-            // splitContainer1.Panel2
+            // RegisterEmailBox
             // 
-            splitContainer1.Panel2.Controls.Add(groupBox2);
-            splitContainer1.Size = new Size(213, 128);
-            splitContainer1.SplitterDistance = 62;
-            splitContainer1.TabIndex = 0;
+            RegisterEmailBox.Location = new Point(3, 19);
+            RegisterEmailBox.Name = "RegisterEmailBox";
+            RegisterEmailBox.Size = new Size(207, 23);
+            RegisterEmailBox.TabIndex = 0;
             // 
-            // splitContainer2
+            // pictureBox1
             // 
-            splitContainer2.Dock = DockStyle.Fill;
-            splitContainer2.Location = new Point(0, 0);
-            splitContainer2.Name = "splitContainer2";
-            splitContainer2.Orientation = Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            splitContainer2.Panel1.Controls.Add(groupBox3);
-            // 
-            // splitContainer2.Panel2
-            // 
-            splitContainer2.Panel2.Controls.Add(button1);
-            splitContainer2.Size = new Size(219, 206);
-            splitContainer2.SplitterDistance = 150;
-            splitContainer2.TabIndex = 8;
+            pictureBox1.BackColor = SystemColors.Control;
+            pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
+            pictureBox1.Dock = DockStyle.Fill;
+            pictureBox1.Location = new Point(0, 0);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(960, 517);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.TabIndex = 1;
+            pictureBox1.TabStop = false;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(219, 206);
-            Controls.Add(splitContainer2);
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            BackgroundImageLayout = ImageLayout.Stretch;
+            ClientSize = new Size(960, 517);
+            Controls.Add(tabControl1);
+            Controls.Add(pictureBox1);
+            FormBorderStyle = FormBorderStyle.Fixed3D;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Version 1";
+            TransparencyKey = SystemColors.ActiveCaption;
             Shown += Form1_Shown;
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            tabControl1.ResumeLayout(false);
+            Login.ResumeLayout(false);
+            groupBox5.ResumeLayout(false);
+            groupBox5.PerformLayout();
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
+            tabPage2.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
-            groupBox3.ResumeLayout(false);
-            splitContainer1.Panel1.ResumeLayout(false);
-            splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
-            splitContainer1.ResumeLayout(false);
-            splitContainer2.Panel1.ResumeLayout(false);
-            splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
-            splitContainer2.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
-
-        private TextBox UserTextBox;
-        private TextBox PasswordTextBox;
-        private Button button1;
-        private GroupBox groupBox1;
-        private GroupBox groupBox2;
         private GroupBox groupBox3;
         private SplitContainer splitContainer1;
-        private SplitContainer splitContainer2;
+        private TabControl tabControl1;
+        private TabPage Login;
+        private TabPage tabPage2;
+        private GroupBox groupBox2;
+        private TextBox RegisterPasswordBox;
+        private Button RegisterAccountButton;
+        private GroupBox groupBox1;
+        private TextBox RegisterEmailBox;
+        private Button LoginButton;
+        private GroupBox groupBox5;
+        private GroupBox groupBox4;
+        private TextBox textBox2;
+        private TextBox textBox1;
+        private PictureBox pictureBox1;
     }
 }
