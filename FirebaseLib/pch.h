@@ -61,6 +61,7 @@ using ::firebase::auth::SignInResult;
 using ::firebase::auth::User;
 using ::firebase::auth::UserInfoInterface;
 using ::firebase::auth::UserMetadata;
+using ::firebase::auth::PhoneAuthProvider;
 // Realtime Database namespaces
 using ::firebase::database::Database;
 using ::firebase::database::DatabaseReference;
@@ -308,4 +309,13 @@ extern "C" static const char ManagerSTR[] = "FireBaseManager";
 extern "C" static const char AuthManagerSTR[] = "FireBaseAuthManager";
 #pragma endregion StaticStrings
 
+#pragma region StaticIntegers
+extern "C" static const int PhoneWaitIntervalMs = 300;
+// Max time to wait for phone authentication to complete
+extern "C" static const int PhoneAuthCodeSendWaitMs = 600000;
+#pragma endregion StaticIntegers
+
+#pragma region StaticFlags
+extern "C" static bool logToDisk = false;
+#pragma endregion StaticFlags
 #endif //PCH_H

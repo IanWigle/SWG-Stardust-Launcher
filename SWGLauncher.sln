@@ -3,22 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Auth Tests", "Auth Tests.vcxproj", "{5EDC1EC6-6177-4C6B-82C0-D3F1829CDBE4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Auth Tests", "AuthTests\Auth Tests.vcxproj", "{5EDC1EC6-6177-4C6B-82C0-D3F1829CDBE4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FirebaseLib", "..\FirebaseLib\FirebaseLib.vcxproj", "{7BCED1B9-9EDB-47B6-A480-8203F0A1276B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FirebaseLib", "FirebaseLib\FirebaseLib.vcxproj", "{7BCED1B9-9EDB-47B6-A480-8203F0A1276B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWGLauncher", "..\SWGLauncher\SWGLauncher.csproj", "{4C04F97D-9742-4888-9333-9FF92DC04459}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWGLauncher", "SWGLauncher\SWGLauncher.csproj", "{4C04F97D-9742-4888-9333-9FF92DC04459}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B8CD1808-24C4-4722-A172-9F052D11FCA9} = {B8CD1808-24C4-4722-A172-9F052D11FCA9}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FirebaseWrapper", "..\FirebaseWrapper\FirebaseWrapper.csproj", "{5298817A-10BC-4D68-9947-013D280EE03C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FirebaseWrapper", "FirebaseWrapper\FirebaseWrapper.csproj", "{5298817A-10BC-4D68-9947-013D280EE03C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DatabaseTests", "..\DatabaseTests\DatabaseTests.vcxproj", "{4BE699D0-5F3B-4A21-A124-401512DD5B1D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DatabaseTests", "RealtimeDatabaseTests\DatabaseTests.vcxproj", "{4BE699D0-5F3B-4A21-A124-401512DD5B1D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CloudStorage Tests", "..\CloudStorage\CloudStorage.vcxproj", "{F3FB5B72-8C22-43F5-B81D-4C28B6FD12CF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CloudStorage Tests", "CloudStorageTests\CloudStorage.vcxproj", "{F3FB5B72-8C22-43F5-B81D-4C28B6FD12CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWGStardustUpdater", "..\SWGStardustUpdater\SWGStardustUpdater.csproj", "{B8CD1808-24C4-4722-A172-9F052D11FCA9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWGStardustUpdater", "SWGStardustUpdater\SWGStardustUpdater.csproj", "{B8CD1808-24C4-4722-A172-9F052D11FCA9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5298817A-10BC-4D68-9947-013D280EE03C} = {5298817A-10BC-4D68-9947-013D280EE03C}
 		{7BCED1B9-9EDB-47B6-A480-8203F0A1276B} = {7BCED1B9-9EDB-47B6-A480-8203F0A1276B}

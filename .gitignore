@@ -40,3 +40,9 @@ Debug
 Output
 obj
 bin
+AuthTests
+CloudStorageTests
+RealtimeDatabaseTests
+
+#Firebase Files
+Resources/google-services.json

@@ -11,8 +11,9 @@ namespace SWGLauncher
         static AudioManager audioManager = null;
 
         static public FirebaseManager GetFirebaseManager() => firebase;
+        static public AudioManager GetAudioManager() => audioManager;
 
-        public const int Launcherversion = 2;
+        public const int Launcherversion = 1;
         public static int FirebaseLauncherVersion { get; private set; }
 
         /// <summary>
@@ -35,16 +36,9 @@ namespace SWGLauncher
             Debug.WriteLine($"Current clientside client version is {Launcherversion}");
             Debug.WriteLine($"The most up to date on firebase is {FirebaseLauncherVersion}");
             
-            Application.Run(new Form1());
+            Application.Run(new MainForm());
 
-            if(firebase.GetAccountType() == AccountType.Anonymous)
-            {
-                firebase.DeleteCurrentAccount();
-            }
-            else
-            {
-                firebase.SignOut();
-            }
+            firebase.SignOut();
             firebase.DeleteManager();
         }
     }

@@ -24,10 +24,29 @@ namespace SWGLauncher
                 outputDevice.Volume = 0.1f;
                 outputDevice.Play();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                MessageBox.Show(e.Message,"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        public void Pause()
+        {
+            if (!IsPlaying()) return;
+
+            outputDevice.Pause();
+        }
+
+        public void Play()
+        {
+            if (IsPlaying()) return;
+
+            outputDevice.Play();
+        }
+
+        public bool IsPlaying()
+        {
+            return outputDevice.PlaybackState == PlaybackState.Playing;
         }
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs eventArgs)

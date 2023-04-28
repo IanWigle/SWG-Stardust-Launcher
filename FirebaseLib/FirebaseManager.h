@@ -13,27 +13,33 @@ namespace FirebaseLib
 		explicit FirebaseManager();
 		~FirebaseManager();
 
-		bool Register();
-
-		void Login();
-		void SignOut();
-
-		std::string& GetEmail();
-		std::string& GetPassword();
-
 		// Auth functions;
 		void SetEmail(const char* userName);
 		void SetPassword(const char* password);
+		void SetDisplayName(const char* name);
+
+		bool Register();
+
+		bool Login();
+		void SignOut();
+
+		void SendPasswordReset(const char* emailAddress);
+
+		std::string& GetEmail();
+		std::string& GetPassword();
+		std::string& GetDisplayName();
 
 		bool StilSignedIn();
-
-		void DeleteCurrentAccount();
 
 		void SignInAnon();
 		int GetAccountType();
 
+		void SetupPhoneAuthentication(const char* phoneNumber);
+
 		inline AuthError GetLastAuthError() { return LastAuthError; }
 		inline std::string GetLastErrorString() { return LastErrorString; }
+
+		std::string GetUserId();
 
 		// Database functions;
 		std::string GetLauncherVersion();
@@ -48,20 +54,21 @@ namespace FirebaseLib
 		void SetupApp();
 		App* m_App = nullptr;
 		Future<User*> SignedUser;
-		inline App* GetApp() { return m_App; }
 
 		// Auth Stuff
-		void SetupAuth();
+		void SetupAuth();		
+		void DeleteCurrentAccount();
 		Auth* m_Auth;
 		std::string m_Email;
 		std::string m_Password;
-		inline Auth* GetAuth() { return m_Auth; }
+		std::string m_DisplayName;
 		AuthError LastAuthError;
 		std::string LastErrorString;
-		Future<User*> AnonUser;
 
 		// Database Stuff
 		void SetupDatabase();
+		void AddAccountToDatabase();
+		bool IsAccountAlreadyLoggedIn();
 		Database* m_Database;
 		std::string m_SavedUrl;		
 
@@ -127,10 +134,6 @@ namespace FirebaseLib
 		{
 			respond(manager->GetLauncherVersion().c_str());
 		}
-		__declspec(dllexport) void FirebaseManager_DeleteCurrentAccount(FirebaseManager* manager)
-		{
-			manager->DeleteCurrentAccount();
-		}
 		__declspec(dllexport) int FirebaseManager_GetAccountType(FirebaseManager* manager)
 		{
 			return manager->GetAccountType();
@@ -146,6 +149,23 @@ namespace FirebaseLib
 		__declspec(dllexport) void __stdcall FirebaseManager_GetLastError(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetLastErrorString().c_str());
+		}
+		__declspec(dllexport) bool FirebaseManager_Login(FirebaseManager* manager)
+		{
+			return manager->Login();
+		}
+		// refer to types.h in firebase::auth::AuthError
+		__declspec(dllexport) int FirebaseManager_GetAuthError(FirebaseManager* manager)
+		{
+			return (int)manager->GetLastAuthError();
+		}
+		__declspec(dllexport) void __stdcall FirebaseManager_GetUserId(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		{
+			respond(manager->GetUserId().c_str());
+		}
+		__declspec(dllexport) void FirebaseManager_SendPasswordResetEmail(FirebaseManager* manager, const char* email)
+		{
+			manager->SendPasswordReset(email);
 		}
 	}
 }

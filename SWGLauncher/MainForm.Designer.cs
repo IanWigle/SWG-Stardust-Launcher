@@ -1,6 +1,6 @@
 ﻿namespace SWGLauncher
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,39 +28,47 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             tabControl1 = new TabControl();
             Login = new TabPage();
             LoginButton = new Button();
             groupBox5 = new GroupBox();
-            textBox2 = new TextBox();
+            LoginPasswordBox = new TextBox();
             groupBox4 = new GroupBox();
-            textBox1 = new TextBox();
-            tabPage2 = new TabPage();
+            LoginEmailBox = new TextBox();
+            Register = new TabPage();
+            groupBox6 = new GroupBox();
+            RegisterDisplayNameBox = new TextBox();
             groupBox2 = new GroupBox();
             RegisterPasswordBox = new TextBox();
             RegisterAccountButton = new Button();
             groupBox1 = new GroupBox();
             RegisterEmailBox = new TextBox();
+            Options = new TabPage();
+            ResetPasswordButton = new Button();
+            PlayMusicToggle = new CheckBox();
             pictureBox1 = new PictureBox();
             tabControl1.SuspendLayout();
             Login.SuspendLayout();
             groupBox5.SuspendLayout();
             groupBox4.SuspendLayout();
-            tabPage2.SuspendLayout();
+            Register.SuspendLayout();
+            groupBox6.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
+            Options.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // tabControl1
             // 
             tabControl1.Controls.Add(Login);
-            tabControl1.Controls.Add(tabPage2);
-            tabControl1.Location = new Point(732, 320);
+            tabControl1.Controls.Add(Register);
+            tabControl1.Controls.Add(Options);
+            tabControl1.Location = new Point(732, 271);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(228, 197);
+            tabControl1.Size = new Size(228, 246);
             tabControl1.TabIndex = 0;
             // 
             // Login
@@ -72,7 +80,7 @@
             Login.Location = new Point(4, 24);
             Login.Name = "Login";
             Login.Padding = new Padding(3);
-            Login.Size = new Size(220, 169);
+            Login.Size = new Size(220, 218);
             Login.TabIndex = 0;
             Login.Text = "Login";
             // 
@@ -84,11 +92,12 @@
             LoginButton.TabIndex = 2;
             LoginButton.Text = "Login";
             LoginButton.UseVisualStyleBackColor = true;
+            LoginButton.Click += LoginButton_Click;
             // 
             // groupBox5
             // 
             groupBox5.BackColor = SystemColors.Control;
-            groupBox5.Controls.Add(textBox2);
+            groupBox5.Controls.Add(LoginPasswordBox);
             groupBox5.Location = new Point(4, 61);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(213, 49);
@@ -96,17 +105,18 @@
             groupBox5.TabStop = false;
             groupBox5.Text = "Password";
             // 
-            // textBox2
+            // LoginPasswordBox
             // 
-            textBox2.Location = new Point(4, 20);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(207, 23);
-            textBox2.TabIndex = 1;
+            LoginPasswordBox.Location = new Point(4, 20);
+            LoginPasswordBox.Name = "LoginPasswordBox";
+            LoginPasswordBox.PasswordChar = '*';
+            LoginPasswordBox.Size = new Size(207, 23);
+            LoginPasswordBox.TabIndex = 1;
             // 
             // groupBox4
             // 
             groupBox4.BackColor = SystemColors.Control;
-            groupBox4.Controls.Add(textBox1);
+            groupBox4.Controls.Add(LoginEmailBox);
             groupBox4.Location = new Point(4, 9);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new Size(213, 49);
@@ -114,34 +124,53 @@
             groupBox4.TabStop = false;
             groupBox4.Text = "Email";
             // 
-            // textBox1
+            // LoginEmailBox
             // 
-            textBox1.BackColor = SystemColors.Window;
-            textBox1.Location = new Point(4, 19);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(207, 23);
-            textBox1.TabIndex = 0;
+            LoginEmailBox.BackColor = SystemColors.Window;
+            LoginEmailBox.Location = new Point(4, 19);
+            LoginEmailBox.Name = "LoginEmailBox";
+            LoginEmailBox.Size = new Size(207, 23);
+            LoginEmailBox.TabIndex = 0;
             // 
-            // tabPage2
+            // Register
             // 
-            tabPage2.BackColor = SystemColors.Control;
-            tabPage2.Controls.Add(groupBox2);
-            tabPage2.Controls.Add(RegisterAccountButton);
-            tabPage2.Controls.Add(groupBox1);
-            tabPage2.Location = new Point(4, 24);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(220, 190);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "Register";
+            Register.BackColor = SystemColors.Control;
+            Register.Controls.Add(groupBox6);
+            Register.Controls.Add(groupBox2);
+            Register.Controls.Add(RegisterAccountButton);
+            Register.Controls.Add(groupBox1);
+            Register.Location = new Point(4, 24);
+            Register.Name = "Register";
+            Register.Padding = new Padding(3);
+            Register.Size = new Size(220, 218);
+            Register.TabIndex = 1;
+            Register.Text = "Register";
+            // 
+            // groupBox6
+            // 
+            groupBox6.BackColor = SystemColors.Control;
+            groupBox6.Controls.Add(RegisterDisplayNameBox);
+            groupBox6.Location = new Point(3, 61);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new Size(213, 49);
+            groupBox6.TabIndex = 11;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "Username";
+            // 
+            // RegisterDisplayNameBox
+            // 
+            RegisterDisplayNameBox.Location = new Point(3, 19);
+            RegisterDisplayNameBox.Name = "RegisterDisplayNameBox";
+            RegisterDisplayNameBox.Size = new Size(207, 23);
+            RegisterDisplayNameBox.TabIndex = 0;
             // 
             // groupBox2
             // 
             groupBox2.BackColor = SystemColors.Control;
             groupBox2.Controls.Add(RegisterPasswordBox);
-            groupBox2.Location = new Point(4, 61);
+            groupBox2.Location = new Point(4, 116);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(213, 48);
+            groupBox2.Size = new Size(213, 49);
             groupBox2.TabIndex = 9;
             groupBox2.TabStop = false;
             groupBox2.Text = "Password";
@@ -150,12 +179,13 @@
             // 
             RegisterPasswordBox.Location = new Point(3, 19);
             RegisterPasswordBox.Name = "RegisterPasswordBox";
+            RegisterPasswordBox.PasswordChar = '*';
             RegisterPasswordBox.Size = new Size(207, 23);
             RegisterPasswordBox.TabIndex = 1;
             // 
             // RegisterAccountButton
             // 
-            RegisterAccountButton.Location = new Point(4, 115);
+            RegisterAccountButton.Location = new Point(3, 169);
             RegisterAccountButton.Name = "RegisterAccountButton";
             RegisterAccountButton.Size = new Size(213, 49);
             RegisterAccountButton.TabIndex = 11;
@@ -181,6 +211,40 @@
             RegisterEmailBox.Size = new Size(207, 23);
             RegisterEmailBox.TabIndex = 0;
             // 
+            // Options
+            // 
+            Options.Controls.Add(ResetPasswordButton);
+            Options.Controls.Add(PlayMusicToggle);
+            Options.Location = new Point(4, 24);
+            Options.Name = "Options";
+            Options.Padding = new Padding(3);
+            Options.Size = new Size(220, 218);
+            Options.TabIndex = 2;
+            Options.Text = "Options";
+            Options.UseVisualStyleBackColor = true;
+            // 
+            // ResetPasswordButton
+            // 
+            ResetPasswordButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ResetPasswordButton.Location = new Point(52, 66);
+            ResetPasswordButton.Name = "ResetPasswordButton";
+            ResetPasswordButton.Size = new Size(120, 44);
+            ResetPasswordButton.TabIndex = 1;
+            ResetPasswordButton.Text = "Reset Password";
+            ResetPasswordButton.UseVisualStyleBackColor = true;
+            ResetPasswordButton.Click += ResetPasswordButton_Click;
+            // 
+            // PlayMusicToggle
+            // 
+            PlayMusicToggle.AutoSize = true;
+            PlayMusicToggle.Location = new Point(8, 10);
+            PlayMusicToggle.Name = "PlayMusicToggle";
+            PlayMusicToggle.Size = new Size(83, 19);
+            PlayMusicToggle.TabIndex = 0;
+            PlayMusicToggle.Text = "Play Music";
+            PlayMusicToggle.UseVisualStyleBackColor = true;
+            PlayMusicToggle.CheckedChanged += PlayMusicToggle_CheckedChanged;
+            // 
             // pictureBox1
             // 
             pictureBox1.BackColor = SystemColors.Control;
@@ -193,7 +257,7 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
-            // Form1
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -205,7 +269,7 @@
             Controls.Add(pictureBox1);
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Name = "Form1";
+            Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Version 1";
             TransparencyKey = SystemColors.ActiveCaption;
@@ -216,11 +280,15 @@
             groupBox5.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
-            tabPage2.ResumeLayout(false);
+            Register.ResumeLayout(false);
+            groupBox6.ResumeLayout(false);
+            groupBox6.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            Options.ResumeLayout(false);
+            Options.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }
@@ -230,7 +298,7 @@
         private SplitContainer splitContainer1;
         private TabControl tabControl1;
         private TabPage Login;
-        private TabPage tabPage2;
+        private TabPage Register;
         private GroupBox groupBox2;
         private TextBox RegisterPasswordBox;
         private Button RegisterAccountButton;
@@ -239,8 +307,13 @@
         private Button LoginButton;
         private GroupBox groupBox5;
         private GroupBox groupBox4;
-        private TextBox textBox2;
-        private TextBox textBox1;
+        private TextBox LoginPasswordBox;
+        private TextBox LoginEmailBox;
         private PictureBox pictureBox1;
+        private TabPage Options;
+        private CheckBox PlayMusicToggle;
+        private Button ResetPasswordButton;
+        private GroupBox groupBox6;
+        private TextBox RegisterDisplayNameBox;
     }
 }

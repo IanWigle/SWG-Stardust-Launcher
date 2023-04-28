@@ -30,7 +30,7 @@ try
     Console.WriteLine("Downloading the new client files.");
     manager.DownloadClient();
 
-
+    // Check if the files were successfully downloaded by checking if the file exists.
     if (File.Exists(NewLauncher))
     {
         Console.WriteLine("Client was downloaded! Replacing old files.");
@@ -43,17 +43,18 @@ try
         return;
     }
 
-
     Console.WriteLine("New client files were replaced!");
 
     File.Delete(NewLauncher);
 
+    Console.WriteLine("Press enter to close.");
+
+    // Wait for input from user so they control when this program closes. 
+    // Just press ENTER
     Console.ReadLine();
 
-    manager.DeleteCurrentAccount();
+    manager.SignOut();
     manager.DeleteManager();
-
-    //Process.Start(@"..\SWGLauncher.exe");
     Process.Start($"{Directory.GetCurrentDirectory()}..\\SWGLauncher.exe");
 }
 catch(Exception e)

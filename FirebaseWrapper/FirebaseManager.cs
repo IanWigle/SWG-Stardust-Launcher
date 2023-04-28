@@ -73,11 +73,6 @@ namespace SWGLauncher
             return ver;
         }
 
-        public void DeleteCurrentAccount()
-        {
-            FirebaseManager_DeleteCurrentAccount(manager);
-        }
-
         public AccountType GetAccountType()
         {
             switch(FirebaseManager_GetAccountType(manager))
@@ -107,6 +102,22 @@ namespace SWGLauncher
             string error = "";
             FirebaseManager_GetLastError(manager, s =>  error = s);
             return error;
+        }
+
+        public bool Login()
+        {
+            return FirebaseManager_Login(manager);
+        }
+
+        // refer to types.h in firebase::auth::AuthError to translate the int to the enum
+        public int GetLastAuthError()
+        {
+            return FirebaseManager_GetAuthError(manager);
+        }
+
+        public void SendPasswordReset(string email)
+        {
+            FirebaseManager_SendPasswordResetEmail(manager, email);
         }
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -143,9 +154,6 @@ namespace SWGLauncher
         private static extern int FirebaseManager_GetClientVersion(IntPtr manager, ResponseDelegate response);
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void FirebaseManager_DeleteCurrentAccount(IntPtr value);
-
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FirebaseManager_GetAccountType(IntPtr value);
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -153,6 +161,15 @@ namespace SWGLauncher
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_GetLastError(IntPtr value, ResponseDelegate response);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool FirebaseManager_Login(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int FirebaseManager_GetAuthError(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_SendPasswordResetEmail(IntPtr value, string str);        
 
         private static IntPtr manager;
     }
