@@ -48,6 +48,7 @@
             ResetPasswordButton = new Button();
             PlayMusicToggle = new CheckBox();
             pictureBox1 = new PictureBox();
+            RememberMeCheckBox = new CheckBox();
             tabControl1.SuspendLayout();
             Login.SuspendLayout();
             groupBox5.SuspendLayout();
@@ -74,6 +75,7 @@
             // Login
             // 
             Login.BackColor = SystemColors.Control;
+            Login.Controls.Add(RememberMeCheckBox);
             Login.Controls.Add(LoginButton);
             Login.Controls.Add(groupBox5);
             Login.Controls.Add(groupBox4);
@@ -86,7 +88,7 @@
             // 
             // LoginButton
             // 
-            LoginButton.Location = new Point(4, 116);
+            LoginButton.Location = new Point(4, 152);
             LoginButton.Name = "LoginButton";
             LoginButton.Size = new Size(213, 49);
             LoginButton.TabIndex = 2;
@@ -112,6 +114,7 @@
             LoginPasswordBox.PasswordChar = '*';
             LoginPasswordBox.Size = new Size(207, 23);
             LoginPasswordBox.TabIndex = 1;
+            LoginPasswordBox.KeyPress += LoginPasswordBox_KeyPress;
             // 
             // groupBox4
             // 
@@ -191,7 +194,7 @@
             RegisterAccountButton.TabIndex = 11;
             RegisterAccountButton.Text = "Make Account";
             RegisterAccountButton.UseVisualStyleBackColor = true;
-            RegisterAccountButton.Click += button1_Click;
+            RegisterAccountButton.Click += RegisterAccount_Click;
             // 
             // groupBox1
             // 
@@ -257,6 +260,16 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
+            // RememberMeCheckBox
+            // 
+            RememberMeCheckBox.AutoSize = true;
+            RememberMeCheckBox.Location = new Point(8, 121);
+            RememberMeCheckBox.Name = "RememberMeCheckBox";
+            RememberMeCheckBox.Size = new Size(104, 19);
+            RememberMeCheckBox.TabIndex = 3;
+            RememberMeCheckBox.Text = "Remember Me";
+            RememberMeCheckBox.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -273,9 +286,10 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Version 1";
             TransparencyKey = SystemColors.ActiveCaption;
-            Shown += Form1_Shown;
+            Shown += MainForm_Shown;
             tabControl1.ResumeLayout(false);
             Login.ResumeLayout(false);
+            Login.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
             groupBox4.ResumeLayout(false);
@@ -315,5 +329,6 @@
         private Button ResetPasswordButton;
         private GroupBox groupBox6;
         private TextBox RegisterDisplayNameBox;
+        private CheckBox RememberMeCheckBox;
     }
 }

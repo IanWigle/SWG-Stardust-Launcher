@@ -22,7 +22,6 @@ namespace SWGLauncher
                 outputDevice.Init(audioFile);
                 outputDevice.PlaybackStopped += OnPlaybackStopped;
                 outputDevice.Volume = 0.1f;
-                outputDevice.Play();
             }
             catch (Exception e)
             {

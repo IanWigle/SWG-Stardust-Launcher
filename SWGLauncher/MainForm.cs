@@ -18,19 +18,12 @@ namespace SWGLauncher
         {
             InitializeComponent();
 
-            string[] files = Directory.GetFiles(@".\Resources", "*.jpg");
-            Random random = new Random();
-
-            string file = files[random.Next(0, files.Length)];
-
-            pictureBox1.Image = Image.FromFile(file);
-
             this.Text = $"SWG Launcher : Version {Program.Launcherversion}";
 
-            PlayMusicToggle.Checked = Program.GetAudioManager().IsPlaying();
+            RememberMeCheckBox.Checked = Program.GetSettings().RememberLastUser;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void RegisterAccount_Click(object sender, EventArgs e)
         {
             if (Program.GetFirebaseManager().SignedIn() == true)
                 Program.GetFirebaseManager().SignOut();
@@ -57,6 +50,7 @@ namespace SWGLauncher
 
             Program.GetFirebaseManager().SetEmail(email);
             Program.GetFirebaseManager().SetPassword(password);
+            Program.GetFirebaseManager().SetDisplayName(displayname);
 
             if (!Program.GetFirebaseManager().Register())
             {
@@ -69,8 +63,50 @@ namespace SWGLauncher
             System.Threading.Thread.Sleep(1000);
         }
 
-        private void Form1_Shown(object sender, EventArgs e)
+        private void MainForm_Shown(object sender, EventArgs e)
         {
+            // Setup window graphics
+            string[] files = Directory.GetFiles(@".\Resources", "*.jpg");
+            if (Program.GetSettings().RandomizeBackgrounds)
+            {
+                Random random = new Random();
+
+                string file = files[random.Next(0, files.Length)];
+
+                pictureBox1.Image = Image.FromFile(file);
+            }
+            else if (files.Length == 0)
+            {
+                MessageBox.Show("There are no background images in the resource folder. There must be at least 1 jpg.", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                Close();
+            }
+            else if (Program.GetSettings().SpecificImage > files.Length || Program.GetSettings().SpecificImage < 0)
+            {
+                MessageBox.Show("Specified index to load specific image is out of possible range.", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                Close();
+            }
+            else
+            {
+                pictureBox1.Image = Image.FromFile(files[Program.GetSettings().SpecificImage]);
+            }
+
+            // Setup audio
+            if (Program.GetSettings().EnableSound)
+            {
+                Program.GetAudioManager().Play();
+                PlayMusicToggle.Checked = true;
+            }
+            else
+            {
+                PlayMusicToggle.Checked = false;
+            }
+
+            if (Program.GetSettings().RememberLastUser)
+            {
+                LoginEmailBox.Text = Program.GetSettings().LastEmail;
+            }
+
+            // Check firebase for updates.
             if (Program.Launcherversion < Program.FirebaseLauncherVersion)
             {
                 switch (MessageBox.Show("This launcher is out of date, would you like to download the new one?", "Update!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
@@ -78,7 +114,9 @@ namespace SWGLauncher
                     case DialogResult.Yes:
                         {
                             Close();
-                            Process.Start(@".\Updater\SWGStardustUpdater.exe");
+                            Process process = new Process();
+                            process.StartInfo.FileName = @".\Updater\SWGStardustUpdater.exe";
+                            process.Start();
                             break;
                         }
                     case DialogResult.No:
@@ -93,11 +131,6 @@ namespace SWGLauncher
                 MessageBox.Show("Somehow, this client is registered as newer than what is on the server. Please get a valid version.", "Hold Up", MessageBoxButtons.OK, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
                 Close();
             }
-        }
-
-        private void pictureBox2_Paint(object sender, PaintEventArgs e)
-        {
-            // e.Graphics.DrawImage(Image.FromFile($"{Directory.GetCurrentDirectory()}\\Resources\\Project_Stardust.png"), 0, 0);
         }
 
         private void LoginButton_Click(object sender, EventArgs e)
@@ -130,7 +163,44 @@ namespace SWGLauncher
             }
             else
             {
-                MessageBox.Show("Signed In!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                // Save new launcher settings here before we lose any possible data.
+                if (Program.GetSettings().RememberLastUser || RememberMeCheckBox.Checked == true)
+                {
+                    Program.GetSettings().LastEmail = email;
+                    Program.GetSettings().RememberLastUser = true;
+                }
+                Program.GetSettings().EnableSound = PlayMusicToggle.Checked;
+
+                string username = Program.GetFirebaseManager().GetDisplayName();
+                string[] strings = File.ReadAllLines(@".\user.cfg");
+                // In the user.cfg, the line we want is line 17
+                if (strings[17].Contains("loginClientID="))
+                {
+                    string[] pieces = strings[17].Split('=');
+                    if (pieces.Length == 2)
+                    {
+                        strings[17] = $"{pieces[0]}=";
+                    }
+
+                    strings[17] = $"{strings[17]}{username}";
+                    File.WriteAllLines(@".\user.cfg", strings);
+                    Process process = new Process();
+                    process.StartInfo.FileName = @".\SwgClient_r.exe";
+                    process.StartInfo.ArgumentList.Add("ClientSuccess");
+                    process.Start();
+                    Close();
+                }
+                // if it doesn't, we will have to add that line ourselves
+                else
+                {
+                    MessageBox.Show("Could not find property \'loginClientID=\' at line 17 in your \'user.cfg\'. Either get a newer version of the file, or add it to your file.",
+                                    "ERROR!",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error,
+                                    MessageBoxDefaultButton.Button1);
+                    Program.GetFirebaseManager().SignOut();
+                    Close();
+                }
             }
 
             RegisterAccountButton.Enabled = true;
@@ -167,6 +237,12 @@ namespace SWGLauncher
                     MessageBox.Show($"{Program.GetFirebaseManager().GetLastError()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 }
             }
+        }
+
+        private void LoginPasswordBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\r')
+                LoginButton_Click(sender, e);
         }
     }
 }

@@ -22,7 +22,7 @@
 
 #ifdef FIREBASELIB_EXPORTS
 #define FirebaseLib_API __declspec(dllexport)
-#define EXPIMP_TEMPLATE
+#define EXPIMP_TEMPLATE template class
 #else
 #define FirebaseLib_API __declspec(dllimport)
 #define EXPIMP_TEMPLATE extern

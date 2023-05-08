@@ -1,28 +1,12 @@
 #include "pch.h"
 #include "PhoneListener.h"
 
-FirebaseLib::FirebaseManager::FirebaseManager(const std::string& email, const std::string& password) :
+FirebaseLib::FirebaseManager::FirebaseManager() :
+    m_Email(""),
+    m_Password(""),
     m_Auth(nullptr),
-    m_App(nullptr),
-    m_Email(email),
-    m_Password(password)
+    m_App(nullptr)
 {
-    SetupApp();
-    SetupAuth();
-    SetupDatabase();
-    SetupCloudStorage();
-
-    SetEmail(email.c_str());
-    SetPassword(password.c_str());
-    Login();
-}
-
-FirebaseLib::FirebaseManager::FirebaseManager()
-{
-    m_Email = "";
-    m_Password = "";
-    m_Auth = nullptr;
-    m_App = nullptr;
     SetupApp();
     SetupAuth();
     SetupDatabase();
@@ -36,30 +20,20 @@ FirebaseLib::FirebaseManager::~FirebaseManager()
 
 void FirebaseLib::FirebaseManager::Destroy()
 {
-    delete m_Storage;
-    m_Storage = nullptr;
+    if (StilSignedIn()) SignOut();
 
-    delete m_Database;
-    m_Database = nullptr;
+    SAFE_DELETE(m_Storage);
 
-    delete m_Auth;
-    m_Auth = nullptr;
+    SAFE_DELETE(m_Database);
 
-    delete m_App;
-    m_App = nullptr;
+    SAFE_DELETE(m_Auth);
+
+    SAFE_DELETE(m_App);
 }
 
 bool FirebaseLib::FirebaseManager::Register()
 {
-    switch (GetAccountType())
-    {
-    // Anonymous
-    case 1:
-        DeleteCurrentAccount();
-        break;
-    default:
-        SignOut();
-    }
+    HANDLE_CURRENT_ACCOUNT(GetAccountType());
 
     Future<::firebase::auth::User*> sign_in_future =
         m_Auth->CreateUserWithEmailAndPassword(m_Email.c_str(), m_Password.c_str());
@@ -88,7 +62,6 @@ bool FirebaseLib::FirebaseManager::Register()
             return false;
         }
 
-        AddAccountToDatabase();
         return true;
     }        
     default:
@@ -101,17 +74,7 @@ bool FirebaseLib::FirebaseManager::Register()
 bool FirebaseLib::FirebaseManager::Login()
 {
     if (StilSignedIn())
-    {
-        switch (GetAccountType())
-        {
-        // Anonymous
-        case 1:
-            DeleteCurrentAccount();
-            break;
-        default:
-            SignOut();
-        }
-    }
+        HANDLE_CURRENT_ACCOUNT(GetAccountType());
 
     //m_Auth->
     Future<User*> sign_in_future =
@@ -141,6 +104,8 @@ bool FirebaseLib::FirebaseManager::Login()
         return false;
     }
 
+    m_DisplayName = m_Auth->current_user()->display_name();
+
     return true;
 }
 
@@ -153,12 +118,6 @@ void FirebaseLib::FirebaseManager::SignOut()
             // Anonymous
         case 1:
             DeleteCurrentAccount();
-            break;
-        case 2:
-            firebase::database::DatabaseReference ref = m_Database->GetReference("Users").PushChild();
-            // Set value to false as they arn't sign in
-            firebase::Future<void> f1 = ref.Child(m_Auth->current_user()->uid()).SetValue(false);
-            WaitForCompletion(f1, "FirebaseManager::SignOut()");
             break;
         }
     }
@@ -276,10 +235,16 @@ void FirebaseLib::FirebaseManager::SetupPhoneAuthentication(const char* phoneNum
     // the phone listener. This would also mean the listener is not a local variable within the function and is
     // instead created/stored as a class instance within the manager.
     //
-    // The other option is to continue in this function with another process events while-loop. However that 
+    // A second other option is to continue in this function with another process events while-loop. However that 
     // would then require us to do some shenanigans in telling the c# to open the new form to then retrieve the
     // code. This option is not likely viable due to the dll to exe talk and that the application proccess would
     // be hung up on the process events while loop.
+    // 
+    // A third long, and more complicated possibility is making forms and windows in c++. This will take longer
+    // because we'll have to setup the form in code. This also means we will also have to setup proccess and WndProcess
+    // event listening for the window. It is possible for a DLL to be attached and listen to Wnd Events, I have done
+    // game engines like that in the past for input and graphical OS events. If we do it this way we also prevent
+    // the code from needing a second function to act as a part two. 
 }
 
 std::string FirebaseLib::FirebaseManager::GetUserId()
@@ -289,34 +254,30 @@ std::string FirebaseLib::FirebaseManager::GetUserId()
 
 std::string FirebaseLib::FirebaseManager::GetLauncherVersion()
 {
-    std::string version = "";
     firebase::database::DatabaseReference ref = m_Database->GetReference("ClientData");
 
     firebase::Future<firebase::database::DataSnapshot> f1 =
-        ref.Child("Version").GetValue();
+        ref.Child("ClientVersion").GetValue();
 
     WaitForCompletion(f1, "FirebaseManager::GetLauncherVersion()");
 
     return f1.result()->value().string_value();
 }
 
-void FirebaseLib::FirebaseManager::DownloadLauncher()
+std::string FirebaseLib::FirebaseManager::GetGameVersion()
 {
-    const size_t BufferSize = 14000;
-    char buffer[BufferSize];
+    firebase::database::DatabaseReference ref = m_Database->GetReference("ClientData");
 
-    TCHAR DirBuffer[MAX_PATH] = { 0 };
-    GetModuleFileName(NULL, DirBuffer, MAX_PATH);    
-    
-    using convert_type = std::codecvt_utf8<wchar_t>;
-    std::wstring_convert<convert_type, wchar_t> converter;
-    
-    std::string directory = converter.to_bytes(std::wstring(DirBuffer));
-    std::string::size_type pos = directory.find_last_of("\\/");
-    directory = directory.substr(0, pos);
-    
-    directory += "\\NewFiles";
-    
+    firebase::Future<firebase::database::DataSnapshot> f1 =
+        ref.Child("GameVersion").GetValue();
+
+    WaitForCompletion(f1, "FirebaseManager::GetGameVersion()");
+
+    return f1.result()->value().string_value();
+}
+
+void FirebaseLib::FirebaseManager::DownloadLauncher()
+{    
     StorageReference fileRef = m_CloudRootReference.Child("SWGLauncher.zip");
     Future<size_t> fileFuture = fileRef.GetFile(".\\SWGLauncher.zip", nullptr, nullptr);
     WaitForCompletion(fileFuture, "FirebaseManager::DownloadLauncher()");
@@ -401,20 +362,6 @@ void FirebaseLib::FirebaseManager::SetupDatabase()
 {
     m_SavedUrl = m_Database->url();
     m_Database->set_persistence_enabled(false);
-}
-
-void FirebaseLib::FirebaseManager::AddAccountToDatabase()
-{
-    firebase::database::DatabaseReference ref = m_Database->GetReference("Users").PushChild();
-}
-
-bool FirebaseLib::FirebaseManager::IsAccountAlreadyLoggedIn()
-{
-    firebase::database::DatabaseReference ref = m_Database->GetReference("Users").PushChild();
-    // Set value to false as they arn't sign in
-    firebase::Future<firebase::database::DataSnapshot> f1 = ref.Child(m_Auth->current_user()->uid()).GetValue();
-    WaitForCompletion(f1, "FirebaseManager::IsAccountAlreadyLoggedIn()");
-    return f1.result();
 }
 
 void FirebaseLib::FirebaseManager::SetupCloudStorage()

@@ -55,7 +55,7 @@ try
 
     manager.SignOut();
     manager.DeleteManager();
-    Process.Start($"{Directory.GetCurrentDirectory()}..\\SWGLauncher.exe");
+    Process.Start(@"..\SWGLauncher.exe");
 }
 catch(Exception e)
 {

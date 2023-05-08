@@ -68,9 +68,9 @@ namespace SWGLauncher
 
         public string GetClientVersion()
         {
-            string ver = "";
-            FirebaseManager_GetClientVersion(manager, s => ver = s);
-            return ver;
+            string version = "";
+            FirebaseManager_GetClientVersion(manager, s => version = s);
+            return version;
         }
 
         public AccountType GetAccountType()
@@ -120,6 +120,25 @@ namespace SWGLauncher
             FirebaseManager_SendPasswordResetEmail(manager, email);
         }
 
+        public void SetDisplayName(string name)
+        {
+            FirebaseManager_SetDisplayName(manager, name);
+        }
+
+        public string GetDisplayName()
+        {
+            string name = "";
+            FirebaseManager_GetDisplayName(manager, s =>  name = s);
+            return name;
+        }
+
+        public string GetGameVersion()
+        {
+            string version = "";
+            FirebaseManager_GetGameVersion(manager, s => version = s);
+            return version;
+        }
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
 
@@ -151,7 +170,7 @@ namespace SWGLauncher
         private static extern void FirebaseManager_SignInAnon(IntPtr value);
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        private static extern int FirebaseManager_GetClientVersion(IntPtr manager, ResponseDelegate response);
+        private static extern void FirebaseManager_GetClientVersion(IntPtr manager, ResponseDelegate response);
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FirebaseManager_GetAccountType(IntPtr value);
@@ -169,7 +188,16 @@ namespace SWGLauncher
         private static extern int FirebaseManager_GetAuthError(IntPtr value);
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void FirebaseManager_SendPasswordResetEmail(IntPtr value, string str);        
+        private static extern void FirebaseManager_SendPasswordResetEmail(IntPtr value, string str);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_SetDisplayName(IntPtr value, string str);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_GetDisplayName(IntPtr value, ResponseDelegate response);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_GetGameVersion(IntPtr value, ResponseDelegate response);
 
         private static IntPtr manager;
     }

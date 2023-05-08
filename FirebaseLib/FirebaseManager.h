@@ -2,6 +2,12 @@
 #include <vector>
 #include <oleauto.h>
 
+#define HANDLE_CURRENT_ACCOUNT(c) switch(c) { \
+							      case 1 : DeleteCurrentAccount(); break; \
+							      default: SignOut(); break; }
+
+#define SAFE_DELETE(p) { delete p; p = nullptr; }
+
 namespace FirebaseLib
 {
 	static const char* kStorageUrl = nullptr;
@@ -9,8 +15,7 @@ namespace FirebaseLib
 	class FirebaseLib_API FirebaseManager
 	{
 	public:
-		FirebaseManager(const std::string& email, const std::string& password);
-		explicit FirebaseManager();
+		FirebaseManager();
 		~FirebaseManager();
 
 		// Auth functions;
@@ -43,6 +48,7 @@ namespace FirebaseLib
 
 		// Database functions;
 		std::string GetLauncherVersion();
+		std::string GetGameVersion();
 
 		// Cloud Storage functions;
 		void DownloadLauncher();
@@ -67,8 +73,6 @@ namespace FirebaseLib
 
 		// Database Stuff
 		void SetupDatabase();
-		void AddAccountToDatabase();
-		bool IsAccountAlreadyLoggedIn();
 		Database* m_Database;
 		std::string m_SavedUrl;		
 
@@ -80,92 +84,100 @@ namespace FirebaseLib
 		std::string LauncherString = "SWGLauncher.zip";
 	};
 
-	EXPIMP_TEMPLATE template class FirebaseLib_API std::vector<FirebaseManager>;
+	EXPIMP_TEMPLATE FirebaseLib_API std::vector<FirebaseManager>;
 
 	// START EXTERN DECLARATIONS
 	typedef void(_stdcall* LPEXTFUNCRESPOND) (LPCSTR s);
 	extern "C"
 	{
-		__declspec(dllexport) FirebaseManager* FirebaseManager_Create()
+		FirebaseLib_API FirebaseManager* FirebaseManager_Create()
 		{ 
 			return new FirebaseManager(); 
 		}
-		__declspec(dllexport) FirebaseManager* FirebaseManager_CreateWithUserAndPassword(const char* username, const char* password)
-		{ 
-			return new FirebaseManager(username, password); 
-		}
-		__declspec(dllexport) void FirebaseManager_Delete(FirebaseManager* manager)
+		FirebaseLib_API void FirebaseManager_Delete(FirebaseManager* manager)
 		{ 
 			delete manager; 
 		}
-		__declspec(dllexport) void FirebaseManager_SetEmail(FirebaseManager* manager, const char* email) 
+		FirebaseLib_API void FirebaseManager_SetEmail(FirebaseManager* manager, const char* email)
 		{ 
 			manager->SetEmail(email); 
 		}
-		__declspec(dllexport) void FirebaseManager_SetPassword(FirebaseManager* manager, const char* password) 
+		FirebaseLib_API void FirebaseManager_SetPassword(FirebaseManager* manager, const char* password)
 		{ 
 			manager->SetPassword(password); 
 		}
-		__declspec(dllexport) bool FirebaseManager_Register(FirebaseManager* manager) 
+		FirebaseLib_API bool FirebaseManager_Register(FirebaseManager* manager)
 		{ 
 			return manager->Register(); 
 		}
-		__declspec(dllexport) void __stdcall FirebaseManager_GetPassword(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		FirebaseLib_API void __stdcall FirebaseManager_GetPassword(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetPassword().c_str());
 		}
-		__declspec(dllexport) void __stdcall FirebaseManager_GetEmail(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		FirebaseLib_API void __stdcall FirebaseManager_GetEmail(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetEmail().c_str());
 		}
-		__declspec(dllexport) bool FirebaseManager_StillSignedIn(FirebaseManager* manager)
+		FirebaseLib_API bool FirebaseManager_StillSignedIn(FirebaseManager* manager)
 		{
 			return manager->StilSignedIn();
 		}
-		__declspec(dllexport) void FirebaseManager_SignOut(FirebaseManager* manager)
+		FirebaseLib_API void FirebaseManager_SignOut(FirebaseManager* manager)
 		{
 			manager->SignOut();
 		}
-		__declspec(dllexport) void FirebaseManager_SignInAnon(FirebaseManager* manager)
+		FirebaseLib_API void FirebaseManager_SignInAnon(FirebaseManager* manager)
 		{
 			manager->SignInAnon();
 		}
-		__declspec(dllexport) void __stdcall FirebaseManager_GetClientVersion(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		FirebaseLib_API void __stdcall FirebaseManager_GetClientVersion(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetLauncherVersion().c_str());
 		}
-		__declspec(dllexport) int FirebaseManager_GetAccountType(FirebaseManager* manager)
+		FirebaseLib_API int FirebaseManager_GetAccountType(FirebaseManager* manager)
 		{
 			return manager->GetAccountType();
 		}
-		__declspec(dllexport) void FirebaseManager_DownloadSWGLauncher(FirebaseManager* manager)
+		FirebaseLib_API void FirebaseManager_DownloadSWGLauncher(FirebaseManager* manager)
 		{
 			manager->DownloadLauncher();
 		}
-		__declspec(dllexport) int FirebaseManager_GetLastAuthError(FirebaseManager* manager)
+		FirebaseLib_API int FirebaseManager_GetLastAuthError(FirebaseManager* manager)
 		{
 			return manager->GetLastAuthError();
 		}
-		__declspec(dllexport) void __stdcall FirebaseManager_GetLastError(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		FirebaseLib_API void __stdcall FirebaseManager_GetLastError(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetLastErrorString().c_str());
 		}
-		__declspec(dllexport) bool FirebaseManager_Login(FirebaseManager* manager)
+		FirebaseLib_API bool FirebaseManager_Login(FirebaseManager* manager)
 		{
 			return manager->Login();
 		}
 		// refer to types.h in firebase::auth::AuthError
-		__declspec(dllexport) int FirebaseManager_GetAuthError(FirebaseManager* manager)
+		FirebaseLib_API int FirebaseManager_GetAuthError(FirebaseManager* manager)
 		{
 			return (int)manager->GetLastAuthError();
 		}
-		__declspec(dllexport) void __stdcall FirebaseManager_GetUserId(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		FirebaseLib_API void __stdcall FirebaseManager_GetUserId(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetUserId().c_str());
 		}
-		__declspec(dllexport) void FirebaseManager_SendPasswordResetEmail(FirebaseManager* manager, const char* email)
+		FirebaseLib_API void FirebaseManager_SendPasswordResetEmail(FirebaseManager* manager, const char* email)
 		{
 			manager->SendPasswordReset(email);
+		}
+		FirebaseLib_API void FirebaseManager_SetDisplayName(FirebaseManager* manager, const char* name)
+		{
+			manager->SetDisplayName(name);
+		}
+		FirebaseLib_API void __stdcall FirebaseManager_GetDisplayName(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		{
+			respond(manager->GetDisplayName().c_str());
+		}
+		FirebaseLib_API void __stdcall FirebaseManager_GetGameVersion(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
+		{
+			respond(manager->GetGameVersion().c_str());
 		}
 	}
 }
