@@ -139,6 +139,16 @@ namespace SWGLauncher
             return version;
         }
 
+        public void DownloadGameUpdate()
+        {
+            FirebaseManager_DownloadGameUpdate(manager);
+        }
+
+        public void DownloadGame()
+        {
+            FirebaseManager_DownloadGame(manager);
+        }
+
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
 
@@ -198,6 +208,12 @@ namespace SWGLauncher
 
         [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_GetGameVersion(IntPtr value, ResponseDelegate response);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_DownloadGameUpdate(IntPtr value);
+
+        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_DownloadGame(IntPtr value);
 
         private static IntPtr manager;
     }

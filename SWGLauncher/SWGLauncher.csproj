@@ -21,11 +21,12 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FirebaseLib\FirebaseLib.vcxproj" />
+    <ProjectReference Include="..\FirebaseLib\FirebaseLib.vcxproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
     <ProjectReference Include="..\FirebaseWrapper\FirebaseWrapper.csproj" />
   </ItemGroup>
 
@@ -45,7 +46,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)..\Resources&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Resources\&quot; /Y /S&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Resources\google-services.json&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)..\Resources\google-services.json&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(ProjectDir)..\Resources\google-services.json&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Updater\&quot; /Y /I" />
+    <Exec Command="xcopy &quot;$(ProjectDir)..\Resources&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Resources\&quot; /Y /S&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Resources\google-services.json&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)..\Resources\google-services.json&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(ProjectDir)..\Resources\google-services.json&quot; &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Updater\&quot; /Y /I&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\SWGLauncher.xml&quot;&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\SWGLauncher.pdb&quot;&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\SWGLauncher.deps.json&quot;&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\FirebaseWrapper.pdb&quot;&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Updater\FirebaseWrapper.pdb&quot;&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Updater\SWGStardustUpdater.deps.json&quot;&#xD;&#xA;del &quot;$(ProjectDir)Output\$(Configuration)\net7.0-windows\Updater\SWGStardustUpdater.pdb&quot;" />
   </Target>
 
 </Project>

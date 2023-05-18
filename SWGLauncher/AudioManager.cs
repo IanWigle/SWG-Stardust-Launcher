@@ -1,9 +1,4 @@
 ﻿using NAudio.Wave;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SWGLauncher
 {
@@ -15,10 +10,10 @@ namespace SWGLauncher
 
         public AudioManager(string url)
         {
+            outputDevice = new WaveOutEvent();
+            audioFile = new AudioFileReader(url);
             try
             {
-                outputDevice = new WaveOutEvent();
-                audioFile = new AudioFileReader(url);
                 outputDevice.Init(audioFile);
                 outputDevice.PlaybackStopped += OnPlaybackStopped;
                 outputDevice.Volume = 0.1f;

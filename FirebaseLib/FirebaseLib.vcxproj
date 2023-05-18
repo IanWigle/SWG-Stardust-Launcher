@@ -168,6 +168,7 @@ xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SW
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DownloadListener.h" />
     <ClInclude Include="FirebaseManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -175,6 +176,7 @@ xcopy "$(ProjectDir)Output\$(Configuration)\FirebaseLib.dll" "$(ProjectDir)..\SW
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="DownloadListener.cpp" />
     <ClCompile Include="FirebaseManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

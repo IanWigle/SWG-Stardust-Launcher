@@ -19,13 +19,20 @@ namespace SWGLauncher
 
         public const int Launcherversion = 1;
         public static int FirebaseLauncherVersion { get; private set; }
+        public static int GameVersion { get; private set; }
+        public static int FirebaseGameVersion { get; private set; }
+        public static int FirstLaunch { get; private set; }
+        public static bool DownloadingGame = false;
 
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            if(args.Contains("FromUpdater"))
+                Directory.SetCurrentDirectory(@"..\");
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             Application.EnableVisualStyles();
@@ -34,17 +41,19 @@ namespace SWGLauncher
 
             LoadSettings();
 
-            audioManager = new AudioManager($"{Directory.GetCurrentDirectory()}\\Resources\\Star-Dust.wav");
+            audioManager = new AudioManager(@".\Resources\Star-Dust.wav");
 
             firebase = new FirebaseManager();
             firebase.SignInAnon();
             FirebaseLauncherVersion = int.Parse(firebase.GetClientVersion());
+            FirebaseGameVersion = int.Parse(firebase.GetGameVersion());
             Debug.WriteLine($"Current clientside client version is {Launcherversion}");
             Debug.WriteLine($"The most up to date on firebase is {FirebaseLauncherVersion}");
 
             // Main Loop
             Application.Run(new MainForm());
 
+            if (!DownloadingGame) FirstLaunch++;
             SaveSettings();
             firebase.DeleteManager();
         }
@@ -61,7 +70,7 @@ namespace SWGLauncher
 
                 string[] lines = File.ReadAllLines(@".\LauncherSettings.cfg");
 
-                if(!(lines.Length > 0))
+                if(lines.Length < 0)
                 {
                     programSettings = new ProgramSettings();
                     return;
@@ -71,7 +80,9 @@ namespace SWGLauncher
                 randomBackgrounds = Convert.ToBoolean(lines[1].Split(':')[1]);
                 specImage = Convert.ToInt32(lines[2].Split(':')[1]);
                 rememberUser = Convert.ToBoolean(lines[3].Split(':')[1]);
-                lastEmail = (lines[4].Split(':').Length > 1) ? Convert.ToString(lines[4].Split(':')[1]) : ""; 
+                lastEmail = (lines[4].Split(':').Length > 1) ? Convert.ToString(lines[4].Split(':')[1]) : "";
+                GameVersion = Convert.ToInt32(lines[5].Split(':')[1]);
+                FirstLaunch = Convert.ToInt32(lines[6].Split(':')[1]);
 
                 programSettings = new ProgramSettings(enableSound, randomBackgrounds, specImage, rememberUser, lastEmail);
             }
@@ -90,6 +101,8 @@ namespace SWGLauncher
             lines.Add($"SpecificImage:{programSettings.SpecificImage}");
             lines.Add($"RememberLastUser:{programSettings.RememberLastUser}");
             lines.Add($"LastEmail:{programSettings.LastEmail}");
+            lines.Add($"GameVersion:{GameVersion}");
+            lines.Add($"FirstLaunch:{FirstLaunch}");
 
             File.WriteAllLines(@".\LauncherSettings.cfg", lines.ToArray());
         }

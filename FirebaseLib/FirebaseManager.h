@@ -1,9 +1,7 @@
 #pragma once
-#include <vector>
-#include <oleauto.h>
 
 #define HANDLE_CURRENT_ACCOUNT(c) switch(c) { \
-							      case 1 : DeleteCurrentAccount(); break; \
+							      case Type::Anonymous : DeleteCurrentAccount(); break; \
 							      default: SignOut(); break; }
 
 #define SAFE_DELETE(p) { delete p; p = nullptr; }
@@ -11,6 +9,16 @@
 namespace FirebaseLib
 {
 	static const char* kStorageUrl = nullptr;
+
+	namespace UserType
+	{
+		enum Type
+		{
+			Error,
+			Anonymous,
+			EmailVerified
+		};
+	}
 
 	class FirebaseLib_API FirebaseManager
 	{
@@ -23,9 +31,9 @@ namespace FirebaseLib
 		void SetPassword(const char* password);
 		void SetDisplayName(const char* name);
 
-		bool Register();
 
 		bool Login();
+		bool Register();
 		void SignOut();
 
 		void SendPasswordReset(const char* emailAddress);
@@ -37,7 +45,7 @@ namespace FirebaseLib
 		bool StilSignedIn();
 
 		void SignInAnon();
-		int GetAccountType();
+		UserType::Type GetAccountType();
 
 		void SetupPhoneAuthentication(const char* phoneNumber);
 
@@ -52,6 +60,8 @@ namespace FirebaseLib
 
 		// Cloud Storage functions;
 		void DownloadLauncher();
+		void DownloadGameUpdate();
+		void DownloadGame();
 
 	private:
 		virtual void Destroy();
@@ -178,6 +188,14 @@ namespace FirebaseLib
 		FirebaseLib_API void __stdcall FirebaseManager_GetGameVersion(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
 			respond(manager->GetGameVersion().c_str());
+		}
+		FirebaseLib_API void FirebaseManager_DownloadGameUpdate(FirebaseManager* manager)
+		{
+			manager->DownloadGameUpdate();
+		}
+		FirebaseLib_API void FirebaseManager_DownloadGame(FirebaseManager* manager)
+		{
+			manager->DownloadGame();
 		}
 	}
 }

@@ -43,6 +43,7 @@ bin
 AuthTests
 CloudStorageTests
 RealtimeDatabaseTests
+ZipPackage
 
 #Firebase Files
 Resources/google-services.json

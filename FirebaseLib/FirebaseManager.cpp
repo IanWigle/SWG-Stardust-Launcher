@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "PhoneListener.h"
+#include "DownloadListener.h"
+
+using FirebaseLib::UserType::Type;
 
 FirebaseLib::FirebaseManager::FirebaseManager() :
     m_Email(""),
@@ -173,23 +176,23 @@ void FirebaseLib::FirebaseManager::SignInAnon()
     m_Auth->SignInAnonymously();
 }
 
-int FirebaseLib::FirebaseManager::GetAccountType()
+FirebaseLib::UserType::Type FirebaseLib::FirebaseManager::GetAccountType()
 {
     if (m_Auth->current_user() == nullptr)
-        return 0;
+        Type::Error;
     else
     {
         if (m_Auth->current_user()->is_anonymous())
         {
-            return 1;
+            return Type::Anonymous;
         }
         else if (m_Auth->current_user()->is_email_verified())
         {
-            return 2;
+            return Type::EmailVerified;
         }
     }
 
-    return 0;
+    Type::Error;
 }
 
 void FirebaseLib::FirebaseManager::SetupPhoneAuthentication(const char* phoneNumber)
@@ -278,9 +281,79 @@ std::string FirebaseLib::FirebaseManager::GetGameVersion()
 
 void FirebaseLib::FirebaseManager::DownloadLauncher()
 {    
-    StorageReference fileRef = m_CloudRootReference.Child("SWGLauncher.zip");
-    Future<size_t> fileFuture = fileRef.GetFile(".\\SWGLauncher.zip", nullptr, nullptr);
+    //StorageReference fileRef = m_CloudRootReference.Child("SWGLauncher.zip");
+    Future<size_t> fileFuture = m_CloudRootReference.GetFile("SWGLauncher.zip", nullptr, nullptr);
     WaitForCompletion(fileFuture, "FirebaseManager::DownloadLauncher()");
+
+    const AuthError error = static_cast<AuthError>(fileFuture.error());
+    LastAuthError = kAuthErrorNone;
+    LastErrorString = fileFuture.error_message();
+}
+
+void FirebaseLib::FirebaseManager::DownloadGameUpdate()
+{
+    TCHAR NPath[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, NPath);
+
+    std::wstring wpath = NPath;
+    std::string spath(wpath.begin(), wpath.end());
+
+    LogMessage(spath.c_str());
+
+    std::string fullpath = spath + "\\" + "StardustUpdate.zip";
+
+    StorageReference fileRef = m_CloudRootReference.Child("StardustUpdate.zip");
+
+    DownloadListener listener;
+
+    Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
+    WaitForCompletion(fileFuture, "FirebaseManager::DownloadGameUpdate()");
+
+    const ::firebase::storage::Error error = static_cast<::firebase::storage::Error>(fileFuture.error());
+    LastErrorString = fileFuture.error_message();
+    LogMessage("ERROR: %s", LastErrorString.c_str());
+}
+
+void FirebaseLib::FirebaseManager::DownloadGame()
+{
+    TCHAR NPath[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, NPath);
+
+    std::wstring wpath = NPath;
+    std::string spath(wpath.begin(), wpath.end());
+
+    LogMessage(spath.c_str());
+
+    //std::string fullpath = spath + "\\" + "StardustGame.zip";
+    //
+    //StorageReference fileRef = m_CloudRootReference.Child("StardustGame.zip");
+    //
+    //DownloadListener listener;
+    //
+    //Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
+    //WaitForCompletion(fileFuture, "FirebaseManager::DownloadGame()");
+    //
+    //const ::firebase::storage::Error error = static_cast<::firebase::storage::Error>(fileFuture.error());
+    //LastErrorString = fileFuture.error_message();
+    //LogMessage("ERROR: %s", LastErrorString.c_str());
+
+    for (int i = 1; i < NumGameFiles + 1; i++)
+    {
+        std::string fileName = "StardustGameFiles" + std::to_string(i) + ".zip";
+        std::string fullpath = spath + "\\" + fileName;
+
+        StorageReference fileRef = m_CloudRootReference.Child(fileName);
+
+        DownloadListener listener;
+
+        Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
+        LogMessage("Downloading %s", fileName.c_str());
+        WaitForCompletion(fileFuture, "FirebaseManager::DownloadGame()");
+
+        const ::firebase::storage::Error error = static_cast<::firebase::storage::Error>(fileFuture.error());
+        LastErrorString = fileFuture.error_message();
+        LogMessage("ERROR: %s", LastErrorString.c_str());
+    }
 }
 
 void FirebaseLib::FirebaseManager::SetupApp()
@@ -366,5 +439,7 @@ void FirebaseLib::FirebaseManager::SetupDatabase()
 
 void FirebaseLib::FirebaseManager::SetupCloudStorage()
 {
-    m_CloudRootReference = m_Storage->GetReference(RootString);
+    m_CloudRootReference = m_Storage->GetReference("Root/");
+    m_Storage->set_max_download_retry_time(MaxDownloadSpeed);
+    m_Storage->set_max_operation_retry_time(MaxDownloadSpeed);
 }

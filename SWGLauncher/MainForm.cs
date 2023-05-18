@@ -67,18 +67,18 @@ namespace SWGLauncher
         {
             // Setup window graphics
             string[] files = Directory.GetFiles(@".\Resources", "*.jpg");
-            if (Program.GetSettings().RandomizeBackgrounds)
+            if (files.Length == 0)
+            {
+                MessageBox.Show("There are no background images in the resource folder. There must be at least 1 jpg.", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                Close();
+            }
+            else if (Program.GetSettings().RandomizeBackgrounds)
             {
                 Random random = new Random();
 
                 string file = files[random.Next(0, files.Length)];
 
                 pictureBox1.Image = Image.FromFile(file);
-            }
-            else if (files.Length == 0)
-            {
-                MessageBox.Show("There are no background images in the resource folder. There must be at least 1 jpg.", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                Close();
             }
             else if (Program.GetSettings().SpecificImage > files.Length || Program.GetSettings().SpecificImage < 0)
             {
@@ -106,7 +106,46 @@ namespace SWGLauncher
                 LoginEmailBox.Text = Program.GetSettings().LastEmail;
             }
 
-            // Check firebase for updates.
+            // Check if we have the game files. If we do not, ask to download
+            if(!File.Exists(@"SwgClient_r.exe"))
+            {
+                switch(MessageBox.Show("We could not find the game files in the launcher directory. Download it now?","Error!",MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1))
+                {
+                    case DialogResult.Yes:
+                        {
+                            Close();
+                            Process process = new Process();
+                            process.StartInfo.FileName = @".\Updater\SWGStardustUpdater.exe";
+                            process.StartInfo.ArgumentList.Add("Game");
+                            process.StartInfo.ArgumentList.Add("FromClient");
+                            process.Start();
+                            return;
+                        }
+                    default:
+                        {
+                            Close();
+                            return;
+                        }
+                }
+            }
+
+            // Check if this is the user's first time opening launcher. If it is, ask if they want to use the setup exe for graphics and other settings.
+            if(Program.FirstLaunch == 0)
+            {
+                switch (MessageBox.Show("We are assuming this is your first time opening this launcher. Do you want to first setup the games graphics settings?", "Welcome!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
+                {
+                    case DialogResult.Yes:
+                        {
+                            Close();
+                            Process process = new Process();
+                            process.StartInfo.FileName = @".\SwgClientSetup_r.exe";
+                            process.Start();
+                            return;
+                        }
+                }
+            }
+
+            // Check firebase for launcher updates.
             if (Program.Launcherversion < Program.FirebaseLauncherVersion)
             {
                 switch (MessageBox.Show("This launcher is out of date, would you like to download the new one?", "Update!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
@@ -116,13 +155,15 @@ namespace SWGLauncher
                             Close();
                             Process process = new Process();
                             process.StartInfo.FileName = @".\Updater\SWGStardustUpdater.exe";
+                            process.StartInfo.ArgumentList.Add("Launcher");
+                            process.StartInfo.ArgumentList.Add("FromClient");
                             process.Start();
-                            break;
+                            return;
                         }
                     case DialogResult.No:
                         {
                             Close();
-                            break;
+                            return;
                         }
                 }
             }
@@ -130,6 +171,28 @@ namespace SWGLauncher
             {
                 MessageBox.Show("Somehow, this client is registered as newer than what is on the server. Please get a valid version.", "Hold Up", MessageBoxButtons.OK, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
                 Close();
+            }
+            // Check firebase for game updates
+            else if (Program.GameVersion < Program.FirebaseGameVersion)
+            {
+                switch(MessageBox.Show("There is a new update to the game, would you like to download the new one?", "Update!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
+                {
+                    case DialogResult.Yes : 
+                        {
+                            Close();
+                            Process process = new Process();
+                            process.StartInfo.FileName = @".\Updater\SWGStardustUpdater.exe";
+                            process.StartInfo.ArgumentList.Add("Update");
+                            process.StartInfo.ArgumentList.Add("FromClient");
+                            process.Start();
+                            return;
+                        }
+                    case DialogResult.No:
+                        {
+                            Close();
+                            return;
+                        }
+                }
             }
         }
 
