@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             tabControl1 = new TabControl();
             Login = new TabPage();
+            RememberMeCheckBox = new CheckBox();
             LoginButton = new Button();
             groupBox5 = new GroupBox();
             LoginPasswordBox = new TextBox();
@@ -48,7 +49,6 @@
             ResetPasswordButton = new Button();
             PlayMusicToggle = new CheckBox();
             pictureBox1 = new PictureBox();
-            RememberMeCheckBox = new CheckBox();
             tabControl1.SuspendLayout();
             Login.SuspendLayout();
             groupBox5.SuspendLayout();
@@ -85,6 +85,16 @@
             Login.Size = new Size(220, 218);
             Login.TabIndex = 0;
             Login.Text = "Login";
+            // 
+            // RememberMeCheckBox
+            // 
+            RememberMeCheckBox.AutoSize = true;
+            RememberMeCheckBox.Location = new Point(8, 121);
+            RememberMeCheckBox.Name = "RememberMeCheckBox";
+            RememberMeCheckBox.Size = new Size(104, 19);
+            RememberMeCheckBox.TabIndex = 3;
+            RememberMeCheckBox.Text = "Remember Me";
+            RememberMeCheckBox.UseVisualStyleBackColor = true;
             // 
             // LoginButton
             // 
@@ -260,16 +270,6 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
-            // RememberMeCheckBox
-            // 
-            RememberMeCheckBox.AutoSize = true;
-            RememberMeCheckBox.Location = new Point(8, 121);
-            RememberMeCheckBox.Name = "RememberMeCheckBox";
-            RememberMeCheckBox.Size = new Size(104, 19);
-            RememberMeCheckBox.TabIndex = 3;
-            RememberMeCheckBox.Text = "Remember Me";
-            RememberMeCheckBox.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -284,7 +284,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Version 1";
+            Text = "Version 1.1";
             TransparencyKey = SystemColors.ActiveCaption;
             Shown += MainForm_Shown;
             tabControl1.ResumeLayout(false);

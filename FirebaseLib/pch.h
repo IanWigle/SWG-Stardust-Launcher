@@ -68,7 +68,6 @@ using ::firebase::database::DatabaseReference;
 // Cloud Storage namespaces
 using ::firebase::storage::Storage;
 using ::firebase::storage::StorageReference;
-using ::firebase::storage::Error;
 using ::firebase::storage::Error::kErrorUnknown;
 using ::firebase::storage::Error::kErrorObjectNotFound;
 
@@ -78,6 +77,7 @@ using ::firebase::storage::Error::kErrorObjectNotFound;
 #define FIREBASE_CONFIG_STRING ""
 #endif  // FIREBASE_CONFIG
 
+#include "Logger.h"
 #pragma region Logging
 static void LogMessage(const char* format, ...)
 {
@@ -150,16 +150,10 @@ static void WaitForCompletion(const firebase::FutureBase& future, const char* na
 #include "FirebaseManager.h"
 #pragma endregion Custom Classes
 
-#pragma region StaticStrings
-extern "C" static const char ManagerSTR[] = "FireBaseManager";
-extern "C" static const char AuthManagerSTR[] = "FireBaseAuthManager";
-#pragma endregion StaticStrings
-
 #pragma region StaticIntegers
 extern "C" static const int PhoneWaitIntervalMs = 300;
 // Max time to wait for phone authentication to complete
 extern "C" static const int PhoneAuthCodeSendWaitMs = 600000;
-extern "C" static const int NumGameFiles = 10;
 #pragma endregion StaticIntegers
 
 #pragma region StaticDoubles

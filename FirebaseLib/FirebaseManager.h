@@ -1,14 +1,15 @@
 #pragma once
 
-#define HANDLE_CURRENT_ACCOUNT(c) switch(c) { \
-							      case Type::Anonymous : DeleteCurrentAccount(); break; \
+#define HANDLE_CURRENT_ACCOUNT    switch(GetAccountType()) { \
+							      case UserType::Anonymous : DeleteCurrentAccount(); break; \
 							      default: SignOut(); break; }
 
 #define SAFE_DELETE(p) { delete p; p = nullptr; }
 
 namespace FirebaseLib
 {
-	static const char* kStorageUrl = nullptr;
+	typedef ::firebase::storage::Error StorageError;
+	typedef ::firebase::database::Error DatabaseError;
 
 	namespace UserType
 	{
@@ -49,19 +50,29 @@ namespace FirebaseLib
 
 		void SetupPhoneAuthentication(const char* phoneNumber);
 
-		inline AuthError GetLastAuthError() { return LastAuthError; }
-		inline std::string GetLastErrorString() { return LastErrorString; }
+		inline AuthError GetLastAuthError() { return m_LastAuthError; }
+		inline std::string GetLastAuthErrorString() { return m_LastAuthErrorString; }
 
 		std::string GetUserId();
 
 		// Database functions;
 		std::string GetLauncherVersion();
 		std::string GetGameVersion();
+		int NumberOfGameZips();
+
+		inline DatabaseError GetLastDatabaseError() { return m_LastDatabaseError; }
+		inline std::string GetLastDatabaseErrorString() { return m_LastDatabaseErrorString; }
 
 		// Cloud Storage functions;
 		void DownloadLauncher();
-		void DownloadGameUpdate();
+		void DownloadGameUpdate(int version);
 		void DownloadGame();
+		bool IsThereUpdate();
+
+		inline StorageError GetLastStorageError() { return m_LastStorageError; }
+		inline std::string GetLastStorageErrorString() { return m_LastAuthErrorString; }
+
+		void LogLauncher(const char* log);
 
 	private:
 		virtual void Destroy();
@@ -69,7 +80,8 @@ namespace FirebaseLib
 		// General App Stuff
 		void SetupApp();
 		App* m_App = nullptr;
-		Future<User*> SignedUser;
+		Future<User*> m_SignedUser;
+		Logger* m_Logger = nullptr;
 
 		// Auth Stuff
 		void SetupAuth();		
@@ -78,23 +90,28 @@ namespace FirebaseLib
 		std::string m_Email;
 		std::string m_Password;
 		std::string m_DisplayName;
-		AuthError LastAuthError;
-		std::string LastErrorString;
+		AuthError m_LastAuthError;
+		std::string m_LastAuthErrorString;
 
 		// Database Stuff
 		void SetupDatabase();
 		Database* m_Database;
 		std::string m_SavedUrl;		
+		std::string m_LastDatabaseErrorString;
+		DatabaseError m_LastDatabaseError;
 
 		// Cloud Storage
 		void SetupCloudStorage();
 		Storage* m_Storage;
 		StorageReference m_CloudRootReference;
-		std::string RootString = "Root";
-		std::string LauncherString = "SWGLauncher.zip";
+		const std::string m_RootString = "Root";
+		const std::string m_LauncherString = "SWGLauncher.zip";
+		StorageError m_LastStorageError;
+		std::string m_LastStorageErrorString;
+		static const char* kStorageUrl;
 	};
 
-	EXPIMP_TEMPLATE FirebaseLib_API std::vector<FirebaseManager>;
+	//EXPIMP_TEMPLATE FirebaseLib_API std::vector<FirebaseManager>;
 
 	// START EXTERN DECLARATIONS
 	typedef void(_stdcall* LPEXTFUNCRESPOND) (LPCSTR s);
@@ -158,7 +175,7 @@ namespace FirebaseLib
 		}
 		FirebaseLib_API void __stdcall FirebaseManager_GetLastError(FirebaseManager* manager, LPEXTFUNCRESPOND respond)
 		{
-			respond(manager->GetLastErrorString().c_str());
+			respond(manager->GetLastAuthErrorString().c_str());
 		}
 		FirebaseLib_API bool FirebaseManager_Login(FirebaseManager* manager)
 		{
@@ -189,13 +206,21 @@ namespace FirebaseLib
 		{
 			respond(manager->GetGameVersion().c_str());
 		}
-		FirebaseLib_API void FirebaseManager_DownloadGameUpdate(FirebaseManager* manager)
+		FirebaseLib_API void FirebaseManager_DownloadGameUpdate(FirebaseManager* manager, int version)
 		{
-			manager->DownloadGameUpdate();
+			manager->DownloadGameUpdate(version);
 		}
 		FirebaseLib_API void FirebaseManager_DownloadGame(FirebaseManager* manager)
 		{
 			manager->DownloadGame();
+		}
+		FirebaseLib_API int FirebaseManager_NumberOfGameZips(FirebaseManager* manager)
+		{
+			return manager->NumberOfGameZips();
+		}
+		FirebaseLib_API void FirebaseManager_LogLauncher(FirebaseManager* manager, const char* log)
+		{
+			return manager->LogLauncher(log);
 		}
 	}
 }

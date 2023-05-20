@@ -42,11 +42,6 @@ namespace SWGLauncher
                 MessageBox.Show("Your password is too short!", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 return;
             }
-            if (displayname == "" || displayname.Length <= 5)
-            {
-                MessageBox.Show("Your display name is too short!", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                return;
-            }
 
             Program.GetFirebaseManager().SetEmail(email);
             Program.GetFirebaseManager().SetPassword(password);
@@ -107,12 +102,13 @@ namespace SWGLauncher
             }
 
             // Check if we have the game files. If we do not, ask to download
-            if(!File.Exists(@"SwgClient_r.exe"))
+            if (!File.Exists(@"SwgClient_r.exe"))
             {
-                switch(MessageBox.Show("We could not find the game files in the launcher directory. Download it now?","Error!",MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1))
+                switch (MessageBox.Show("We could not find the game files in the launcher directory. Download it now?", "Error!", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1))
                 {
                     case DialogResult.Yes:
                         {
+                            Program.DownloadingGame = true;
                             Close();
                             Process process = new Process();
                             process.StartInfo.FileName = @".\Updater\SWGStardustUpdater.exe";
@@ -130,7 +126,7 @@ namespace SWGLauncher
             }
 
             // Check if this is the user's first time opening launcher. If it is, ask if they want to use the setup exe for graphics and other settings.
-            if(Program.FirstLaunch == 0)
+            if (Program.FirstLaunch == 0)
             {
                 switch (MessageBox.Show("We are assuming this is your first time opening this launcher. Do you want to first setup the games graphics settings?", "Welcome!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
                 {
@@ -173,11 +169,11 @@ namespace SWGLauncher
                 Close();
             }
             // Check firebase for game updates
-            else if (Program.GameVersion < Program.FirebaseGameVersion)
+            else if (Program.GameVersion != Program.FirebaseGameVersion)
             {
-                switch(MessageBox.Show("There is a new update to the game, would you like to download the new one?", "Update!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
+                switch (MessageBox.Show("There is a new update to the game, would you like to download the new one?", "Update!", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1))
                 {
-                    case DialogResult.Yes : 
+                    case DialogResult.Yes:
                         {
                             Close();
                             Process process = new Process();

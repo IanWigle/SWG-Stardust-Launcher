@@ -83,7 +83,7 @@ partial class Program
         }
         else
         {
-            Console.WriteLine("ERROR : Unable to open the zip file containing new launcher. Aborting!");
+            Console.WriteLine("ERROR: Unable to open the zip file containing new launcher. Aborting!");
             return;
         }
 
@@ -95,14 +95,40 @@ partial class Program
     static void DownloadUpdate()
     {
         const string NewUpdate = @".\StardustUpdate.zip";
+        int CurrentGameVersion = 1;
+        int CurrentFirebaseGameVersion = int.Parse(manager.GetGameVersion());
 
-        if(File.Exists(NewUpdate))
+        if (File.Exists(@"..\LauncherSettings.cfg"))
         {
-            File.Delete(NewUpdate);
+            string[] lines = File.ReadAllLines(@"..\LauncherSettings.cfg");
+
+            lines[5] = $"GameVersion:{manager.GetGameVersion()}";
+            CurrentGameVersion = int.Parse(lines[5].Split(':')[1]);
+        }
+
+        if(CurrentGameVersion >= CurrentFirebaseGameVersion)
+        {
+            Console.WriteLine("ERROR: Somehow the game is either already updated, or newever than whats on the cloud.");
+            return;
+        }
+
+        {
+            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory());
+            foreach(string file in files)
+            {
+                if (files.Contains(NewUpdate))
+                    File.Delete($@".\{file}");
+            }
         }
 
         Console.WriteLine("Downloading new update files");
-        manager.DownloadGameUpdate();
+        do
+        {
+            if ((CurrentGameVersion + 1) > CurrentFirebaseGameVersion) break;
+            manager.DownloadGameUpdate(CurrentGameVersion + 1);
+            CurrentGameVersion++;
+        } while (CurrentGameVersion != CurrentFirebaseGameVersion);
+
 
         if(File.Exists(NewUpdate))
         {
@@ -133,7 +159,7 @@ partial class Program
     static void DownloadGame()
     {
         const string NewGame = @".\StardustGameFiles";
-        const int NumFiles = 10;
+        int NumFiles = manager.GetNumberOfGameFiles();
 
         if (File.Exists(NewGame))
         {

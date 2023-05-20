@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace SWGLauncher
 {
@@ -17,10 +19,10 @@ namespace SWGLauncher
 
         static public ProgramSettings GetSettings() => programSettings;
 
-        public const int Launcherversion = 1;
-        public static int FirebaseLauncherVersion { get; private set; }
-        public static int GameVersion { get; private set; }
-        public static int FirebaseGameVersion { get; private set; }
+        public const double Launcherversion = 1.1;
+        public static double FirebaseLauncherVersion { get; private set; }
+        public static double GameVersion { get; private set; }
+        public static double FirebaseGameVersion { get; private set; }
         public static int FirstLaunch { get; private set; }
         public static bool DownloadingGame = false;
 
@@ -45,8 +47,8 @@ namespace SWGLauncher
 
             firebase = new FirebaseManager();
             firebase.SignInAnon();
-            FirebaseLauncherVersion = int.Parse(firebase.GetClientVersion());
-            FirebaseGameVersion = int.Parse(firebase.GetGameVersion());
+            FirebaseLauncherVersion = Convert.ToDouble(firebase.GetClientVersion());
+            FirebaseGameVersion = double.Parse(firebase.GetGameVersion());
             Debug.WriteLine($"Current clientside client version is {Launcherversion}");
             Debug.WriteLine($"The most up to date on firebase is {FirebaseLauncherVersion}");
 
@@ -81,7 +83,7 @@ namespace SWGLauncher
                 specImage = Convert.ToInt32(lines[2].Split(':')[1]);
                 rememberUser = Convert.ToBoolean(lines[3].Split(':')[1]);
                 lastEmail = (lines[4].Split(':').Length > 1) ? Convert.ToString(lines[4].Split(':')[1]) : "";
-                GameVersion = Convert.ToInt32(lines[5].Split(':')[1]);
+                GameVersion = Convert.ToDouble(lines[5].Split(':')[1]);
                 FirstLaunch = Convert.ToInt32(lines[6].Split(':')[1]);
 
                 programSettings = new ProgramSettings(enableSound, randomBackgrounds, specImage, rememberUser, lastEmail);
@@ -89,6 +91,7 @@ namespace SWGLauncher
             else
             {
                 programSettings = new ProgramSettings();
+                GameVersion = 1;
             }
         }
 
