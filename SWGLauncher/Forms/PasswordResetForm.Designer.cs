@@ -1,4 +1,4 @@
-﻿namespace SWGLauncher
+﻿namespace SWGLauncher.Forms
 {
     partial class PasswordResetForm
     {

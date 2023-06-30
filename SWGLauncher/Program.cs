@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SWGLauncher.Forms;
 
 namespace SWGLauncher
 {

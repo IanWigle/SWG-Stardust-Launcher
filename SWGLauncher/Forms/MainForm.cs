@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO.Compression;
-namespace SWGLauncher
+
+namespace SWGLauncher.Forms
 {
     /// <summary>
     /// Main Launcher Form that all launcher logic is contained in.
