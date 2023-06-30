@@ -1,11 +1,5 @@
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO.Compression;
-using System.Net;
-using System.Text;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-
 namespace SWGLauncher
 {
     /// <summary>

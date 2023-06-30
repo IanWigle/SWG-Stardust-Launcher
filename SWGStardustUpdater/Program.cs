@@ -2,10 +2,8 @@
 //Console.WriteLine("Hello, World!");
 //Console.ReadLine();
 using SWGLauncher;
-using System;
 using System.IO.Compression;
 using System.Diagnostics;
-using System.Runtime.Intrinsics.Arm;
 
 partial class Program
 {
