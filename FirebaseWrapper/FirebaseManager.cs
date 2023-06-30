@@ -97,10 +97,10 @@ namespace SWGLauncher
             FirebaseManager_DownloadSWGLauncher(manager);
         }
 
-        public string GetLastError()
+        public string GetLastAuthErrorString()
         {
             string error = "";
-            FirebaseManager_GetLastError(manager, s =>  error = s);
+            FirebaseManager_GetLastAuthErrorString(manager, s =>  error = s);
             return error;
         }
 
@@ -153,74 +153,128 @@ namespace SWGLauncher
         {
             return FirebaseManager_NumberOfGameZips(manager);
         }
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+
+        public void LogLauncher(string log)
+        {
+            FirebaseManager_LogLauncher(manager, log);
+        }
+
+        public int GetLastStorageError()
+        {
+            return FirebaseManager_GetLastStorageError(manager);
+        }
+
+        public string GetLastStorageErrorString()
+        {
+            string error = "";
+            FirebaseManager_GetLastStorageErrorString(manager, s => error = s);
+            return error;
+        }
+
+        public void DownloadNewUpdater()
+        {
+            FirebaseManager_DownLoadNewUpdater(manager);
+        }
+
+        public string GetUpdaterVersion()
+        {
+            string version = "";
+            FirebaseManager_GetUpdaterVersion(manager, s => version = s);
+            return version;
+        }
+
+        public bool GetUnderMaintenance()
+        {
+            return FirebaseManager_UnderMaintenance(manager);
+        }
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_Delete(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SetEmail(IntPtr value, string email);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SetPassword(IntPtr value, string str);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern bool FirebaseManager_Register(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern void FirebaseManager_GetPassword(IntPtr manager, ResponseDelegate response);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern void FirebaseManager_GetEmail(IntPtr manager, ResponseDelegate response);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SignOut(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern bool FirebaseManager_StillSignedIn(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SignInAnon(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         private static extern void FirebaseManager_GetClientVersion(IntPtr manager, ResponseDelegate response);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FirebaseManager_GetAccountType(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_DownloadSWGLauncher(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void FirebaseManager_GetLastError(IntPtr value, ResponseDelegate response);
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_GetLastAuthErrorString(IntPtr value, ResponseDelegate response);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern bool FirebaseManager_Login(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FirebaseManager_GetAuthError(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SendPasswordResetEmail(IntPtr value, string str);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_SetDisplayName(IntPtr value, string str);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_GetDisplayName(IntPtr value, ResponseDelegate response);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_GetGameVersion(IntPtr value, ResponseDelegate response);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_DownloadGameUpdate(IntPtr value, int version);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_DownloadGame(IntPtr value);
 
-        [DllImport("FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern int FirebaseManager_NumberOfGameZips(IntPtr value);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int FirebaseManager_LogLauncher(IntPtr value, string log);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_GetLastStorageErrorString(IntPtr value, ResponseDelegate response);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int FirebaseManager_GetLastStorageError(IntPtr value);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_DownLoadNewUpdater(IntPtr value);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int FirebaseManager_GetUpdaterVersion(IntPtr value, ResponseDelegate response);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool FirebaseManager_UnderMaintenance(IntPtr value);
+
         private static IntPtr manager;
     }
 }

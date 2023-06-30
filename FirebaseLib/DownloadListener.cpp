@@ -10,5 +10,5 @@ void DownloadListener::OnProgress(firebase::storage::Controller* controller)
 
 void DownloadListener::OnPaused(firebase::storage::Controller* controller)
 {
-	//controller->Resume();
+	controller->Resume();
 }

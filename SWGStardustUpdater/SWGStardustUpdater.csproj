@@ -13,12 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FirebaseLib\FirebaseLib.vcxproj" />
+    <ProjectReference Include="..\FirebaseLib\FirebaseLib.vcxproj">
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\FirebaseWrapper\FirebaseWrapper.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)bin\$(Configuration)\net7.0\&quot; &quot;$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows\Updater\&quot; /Y /S" />
+    <Exec Command="xcopy &quot;$(ProjectDir)bin\$(Configuration)\net7.0\&quot; &quot;$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows\Updater\&quot; /Y /S&#xD;&#xA;xcopy &quot;$(ProjectDir)bin\$(Configuration)\net7.0\&quot; &quot;$(ProjectDir)..\ZipPackage\bin\$(Configuration)\net7.0\RawUpdater\&quot; /Y /S" />
   </Target>
 
 </Project>

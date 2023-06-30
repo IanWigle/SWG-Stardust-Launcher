@@ -49,6 +49,7 @@
             ResetPasswordButton = new Button();
             PlayMusicToggle = new CheckBox();
             pictureBox1 = new PictureBox();
+            serverBox = new ComboBox();
             tabControl1.SuspendLayout();
             Login.SuspendLayout();
             groupBox5.SuspendLayout();
@@ -226,6 +227,7 @@
             // 
             // Options
             // 
+            Options.Controls.Add(serverBox);
             Options.Controls.Add(ResetPasswordButton);
             Options.Controls.Add(PlayMusicToggle);
             Options.Location = new Point(4, 24);
@@ -239,7 +241,7 @@
             // ResetPasswordButton
             // 
             ResetPasswordButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ResetPasswordButton.Location = new Point(52, 66);
+            ResetPasswordButton.Location = new Point(55, 166);
             ResetPasswordButton.Name = "ResetPasswordButton";
             ResetPasswordButton.Size = new Size(120, 44);
             ResetPasswordButton.TabIndex = 1;
@@ -269,6 +271,15 @@
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
+            // 
+            // serverBox
+            // 
+            serverBox.FormattingEnabled = true;
+            serverBox.Location = new Point(6, 35);
+            serverBox.Name = "serverBox";
+            serverBox.Size = new Size(206, 23);
+            serverBox.TabIndex = 2;
+            serverBox.SelectedIndexChanged += serverBox_SelectedIndexChanged;
             // 
             // MainForm
             // 
@@ -330,5 +341,6 @@
         private GroupBox groupBox6;
         private TextBox RegisterDisplayNameBox;
         private CheckBox RememberMeCheckBox;
+        private ComboBox serverBox;
     }
 }

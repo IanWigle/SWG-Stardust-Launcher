@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO.Compression;
+using System.Net;
 using System.Text;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
@@ -11,6 +13,8 @@ namespace SWGLauncher
     /// </summary>
     public partial class MainForm : Form
     {
+        const string NEWSERVER = "New Server...";
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -25,6 +29,7 @@ namespace SWGLauncher
 
         private void RegisterAccount_Click(object sender, EventArgs e)
         {
+            Program.GetFirebaseManager().LogLauncher("MainForm : RegisterAccount Event Started");
             if (Program.GetFirebaseManager().SignedIn() == true)
                 Program.GetFirebaseManager().SignOut();
 
@@ -34,11 +39,13 @@ namespace SWGLauncher
 
             if (email == "")
             {
+                Program.GetFirebaseManager().LogLauncher("MainForm : Please provide a email address");
                 MessageBox.Show("Please provide a email address", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 return;
             }
             if (password == "" || password.Length <= 4)
             {
+                Program.GetFirebaseManager().LogLauncher("MainForm : Your password is too short!");
                 MessageBox.Show("Your password is too short!", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 return;
             }
@@ -49,10 +56,12 @@ namespace SWGLauncher
 
             if (!Program.GetFirebaseManager().Register())
             {
-                MessageBox.Show($"{Program.GetFirebaseManager().GetLastError()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                Program.GetFirebaseManager().LogLauncher($"MainForm : Firebase ERROR : {Program.GetFirebaseManager().GetLastAuthErrorString()}");
+                MessageBox.Show($"{Program.GetFirebaseManager().GetLastAuthErrorString()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
             else
             {
+                Program.GetFirebaseManager().LogLauncher("MainForm : Account made! Check your email to validate.");
                 MessageBox.Show("Account made! Check your email to validate.", "Almost there...", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
             }
             System.Threading.Thread.Sleep(1000);
@@ -64,6 +73,7 @@ namespace SWGLauncher
             string[] files = Directory.GetFiles(@".\Resources", "*.jpg");
             if (files.Length == 0)
             {
+                Program.GetFirebaseManager().LogLauncher("MainForm : No background images found. Not risking possible crash, closing launcher.");
                 MessageBox.Show("There are no background images in the resource folder. There must be at least 1 jpg.", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 Close();
             }
@@ -74,15 +84,20 @@ namespace SWGLauncher
                 string file = files[random.Next(0, files.Length)];
 
                 pictureBox1.Image = Image.FromFile(file);
+
+                Program.GetFirebaseManager().LogLauncher($"MainForm : Selected background image at random. Using {file}");
             }
             else if (Program.GetSettings().SpecificImage > files.Length || Program.GetSettings().SpecificImage < 0)
             {
+                Program.GetFirebaseManager().LogLauncher("MainForm : Specified index to load specific image is out of possible range.");
                 MessageBox.Show("Specified index to load specific image is out of possible range.", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 Close();
             }
             else
             {
                 pictureBox1.Image = Image.FromFile(files[Program.GetSettings().SpecificImage]);
+
+                Program.GetFirebaseManager().LogLauncher($"MainForm : Selected background image. Using {files[Program.GetSettings().SpecificImage]}");
             }
 
             // Setup audio
@@ -96,9 +111,18 @@ namespace SWGLauncher
                 PlayMusicToggle.Checked = false;
             }
 
+            // Get the last logged in user.
             if (Program.GetSettings().RememberLastUser)
             {
                 LoginEmailBox.Text = Program.GetSettings().LastEmail;
+            }
+
+            // Check if we are under maintenance.
+            if (Program.GetFirebaseManager().GetUnderMaintenance() == true)
+            {
+                MessageBox.Show("Stardust is currently under maintenance. Please come back later. Check out updates on the Stardust Discord.", "Notice!", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
+                Close();
+                return;
             }
 
             // Check if we have the game files. If we do not, ask to download
@@ -141,6 +165,7 @@ namespace SWGLauncher
                 }
             }
 
+
             // Check firebase for launcher updates.
             if (Program.Launcherversion < Program.FirebaseLauncherVersion)
             {
@@ -154,6 +179,48 @@ namespace SWGLauncher
                             process.StartInfo.ArgumentList.Add("Launcher");
                             process.StartInfo.ArgumentList.Add("FromClient");
                             process.Start();
+                            return;
+                        }
+                    case DialogResult.No:
+                        {
+                            Close();
+                            return;
+                        }
+                }
+            }
+
+            // Check firebaser for updater updates.
+            else if (Program.FirebaseUpdaterVersion != Program.UpdaterVersion)
+            {
+                switch (MessageBox.Show("We've detected that there's a new version of the updater, can we download it?", "Update!", MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1))
+                {
+                    case DialogResult.Yes:
+                        {
+                            Program.GetFirebaseManager().DownloadNewUpdater();
+
+                            if (File.Exists(@".\SWGStardustUpdater.zip"))
+                            {
+                                try
+                                {
+                                    ZipFile.ExtractToDirectory(@".\SWGStardustUpdater.zip", @".\Updater\", true);
+                                    File.Delete(@".\SWGStardustUpdater.zip");
+                                    Program.UpdaterVersion = Program.FirebaseUpdaterVersion;
+
+                                    MessageBox.Show("Downloader Update finished! We will restart the launcher now.", "Finished!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                                    Program.SaveSettings();
+                                    Application.Restart();
+                                    Environment.Exit(0);
+                                    return;
+                                }
+                                catch (Exception exception)
+                                {
+                                    MessageBox.Show(exception.Message, "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                                    Application.Exit();
+                                    Environment.Exit(0);
+                                    return;
+                                }
+                            }
+
                             return;
                         }
                     case DialogResult.No:
@@ -190,6 +257,9 @@ namespace SWGLauncher
                         }
                 }
             }
+
+            // Get all registered servers.
+            FillServerBoxCombo();
         }
 
         private void LoginButton_Click(object sender, EventArgs e)
@@ -218,7 +288,7 @@ namespace SWGLauncher
             if (!Program.GetFirebaseManager().Login())
             {
                 int authError = Program.GetFirebaseManager().GetLastAuthError();
-                MessageBox.Show($"{Program.GetFirebaseManager().GetLastError()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                MessageBox.Show($"{Program.GetFirebaseManager().GetLastAuthErrorString()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
             else
             {
@@ -229,6 +299,13 @@ namespace SWGLauncher
                     Program.GetSettings().RememberLastUser = true;
                 }
                 Program.GetSettings().EnableSound = PlayMusicToggle.Checked;
+
+                {
+                    string[] loginstrings = File.ReadAllLines(@".\login.cfg");
+                    loginstrings[7] = $"    loginServerPort0={Program.LastIP.IPPort}";
+                    loginstrings[8] = $"    loginServerAddress0={Program.LastIP.IP}";
+                    File.WriteAllLines(@".\login.cfg", loginstrings);
+                }
 
                 string username = Program.GetFirebaseManager().GetDisplayName();
                 string[] strings = File.ReadAllLines(@".\user.cfg");
@@ -293,7 +370,7 @@ namespace SWGLauncher
                 }
                 else
                 {
-                    MessageBox.Show($"{Program.GetFirebaseManager().GetLastError()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    MessageBox.Show($"{Program.GetFirebaseManager().GetLastAuthErrorString()}", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 }
             }
         }
@@ -302,6 +379,50 @@ namespace SWGLauncher
         {
             if (e.KeyChar == '\r')
                 LoginButton_Click(sender, e);
+        }
+
+        private void serverBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if((serverBox.SelectedItem as string) == NEWSERVER)
+            {
+                AddServer addServer = new AddServer();
+                addServer.ShowDialog();
+
+                if(addServer.Successful)
+                {
+                    IPData newServer = new IPData(addServer.ServerIP, addServer.ServerName, addServer.ServerPort);
+                    Program.IPAddresses.Add(newServer);
+                    Program.LastIP = newServer;
+                    FillServerBoxCombo();
+                }
+            }
+            else
+            {
+                foreach(IPData server in Program.IPAddresses)
+                {
+                    if((serverBox.SelectedItem as string) == server.ServerName)
+                    {
+                        Program.LastIP = server;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void FillServerBoxCombo()
+        {
+            serverBox.Items.Clear();
+            foreach (IPData server in Program.IPAddresses)
+            {
+                serverBox.Items.Add(server.ServerName);
+                if(server.ServerName == Program.LastIP.ServerName)
+                {
+                    serverBox.SelectedIndex = serverBox.Items.IndexOf(serverBox.Items[serverBox.Items.Count-1]);
+                    continue;
+                }
+            }
+            
+            serverBox.Items.Add(NEWSERVER);
         }
     }
 }

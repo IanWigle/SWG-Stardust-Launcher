@@ -12,4 +12,8 @@
     <ProjectReference Include="..\FirebaseLib\FirebaseLib.vcxproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)bin\$(Configuration)\net7.0\FirebaseWrapper.dll&quot; &quot;$(ProjectDir)..\SWGLauncher\Output\$(Configuration)\net7.0-windows\&quot; /Y /I&#xD;&#xA;xcopy &quot;$(ProjectDir)bin\$(Configuration)\net7.0\FirebaseWrapper.dll&quot; &quot;$(ProjectDir)..\ZipPackage\bin\$(Configuration)\net7.0\RawLauncher\&quot; /Y /I" />
+  </Target>
+
 </Project>

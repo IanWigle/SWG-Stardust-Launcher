@@ -10,6 +10,7 @@ namespace FirebaseLib
 
 		void LogLauncher(const char* text, ...);
 		void LogFirebase(const char* text, ...);
+		void LogUpdater(const char* text, ...);
 
 		static inline std::string getCurrentDateTime(std::string s) {
 			time_t now = time(0);
@@ -26,6 +27,11 @@ namespace FirebaseLib
 	private:
 		const std::string LogLauncherFileName = "Logs\\LauncherLog";
 		const std::string LogFirebaseFileName = "Logs\\FirebaseLog";
+		const std::string LogUpdaterFileName = "Logs\\UpdaterLog";
 		const std::string LogExt = ".txt";		
+
+		std::vector<std::string> LauncherLog;
+		std::vector<std::string> FirebaseLog;
+		std::vector<std::string> UpdaterLog;
 	};
 }

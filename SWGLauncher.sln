@@ -24,7 +24,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWGStardustUpdater", "SWGSt
 		{7BCED1B9-9EDB-47B6-A480-8203F0A1276B} = {7BCED1B9-9EDB-47B6-A480-8203F0A1276B}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipPackage", "ZipPackage\ZipPackage.csproj", "{EA0CA528-3219-4119-8789-1DE42333E4DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipPackage", "ZipPackage\ZipPackage.csproj", "{EA0CA528-3219-4119-8789-1DE42333E4DA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C04F97D-9742-4888-9333-9FF92DC04459} = {4C04F97D-9742-4888-9333-9FF92DC04459}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,6 +5,7 @@ using SWGLauncher;
 using System;
 using System.IO.Compression;
 using System.Diagnostics;
+using System.Runtime.Intrinsics.Arm;
 
 partial class Program
 {
@@ -14,15 +15,22 @@ partial class Program
     {
         try
         {
+            string directory = Directory.GetCurrentDirectory();
+
+            if (args.Contains("FromClient"))
+                Directory.SetCurrentDirectory(@".\Updater\");
+
+            if (!Directory.Exists(@".\Logs"))
+                Directory.CreateDirectory(@".\Logs");
+
             // Initialize the firebase manager
             manager = new FirebaseManager();
             manager.SignInAnon();
 
-            if(args.Contains("FromClient"))
-                Directory.SetCurrentDirectory(@".\Updater\");
+            
 
             // Hard coded version for updater.
-            const double Version = 0.1;
+            const double Version = 0.2;
 
             Console.WriteLine($"Welcome to the SWG Stardust Updater! Version {Version}.");
 
@@ -55,7 +63,7 @@ partial class Program
         catch (Exception e)
         {
             Console.WriteLine(e);
-            if (manager != null) Console.WriteLine(manager.GetLastError());
+            if (manager != null) Console.WriteLine(manager.GetLastAuthErrorString());
             Console.ReadLine();
             if (manager != null) manager.DeleteManager();
         }
@@ -106,9 +114,10 @@ partial class Program
             CurrentGameVersion = int.Parse(lines[5].Split(':')[1]);
         }
 
-        if(CurrentGameVersion >= CurrentFirebaseGameVersion)
+        if(CurrentGameVersion > CurrentFirebaseGameVersion/* || CurrentGameVersion == CurrentFirebaseGameVersion*/)
         {
             Console.WriteLine("ERROR: Somehow the game is either already updated, or newever than whats on the cloud.");
+            Console.WriteLine($"The local version is {CurrentGameVersion}, while on the servers it is {CurrentFirebaseGameVersion}");
             return;
         }
 
@@ -122,32 +131,50 @@ partial class Program
         }
 
         Console.WriteLine("Downloading new update files");
+
+        int incrementVersion = CurrentGameVersion;
         do
         {
-            if ((CurrentGameVersion + 1) > CurrentFirebaseGameVersion) break;
-            manager.DownloadGameUpdate(CurrentGameVersion + 1);
-            CurrentGameVersion++;
-        } while (CurrentGameVersion != CurrentFirebaseGameVersion);
+            Console.WriteLine($"Downloading StardustUpdate{incrementVersion}");
+            manager.DownloadGameUpdate(incrementVersion);
+            if ((incrementVersion + 1) > CurrentFirebaseGameVersion) break;
+            else incrementVersion++;
+        } while (incrementVersion != CurrentFirebaseGameVersion);
 
-
-        if(File.Exists(NewUpdate))
+        incrementVersion = CurrentGameVersion;
+        do
         {
-            Console.WriteLine("New Game Update files downloaded! Replacing old files.");
-            Console.WriteLine("Do not touch any game files!");
-            ZipFile.ExtractToDirectory(NewUpdate, @"..\", true);
-        }
-        else
-        {
-            Console.WriteLine("ERROR : Unable to open the zip file containing new game files. Aborting!");
-            return;
-        }
+            if (File.Exists(@$".\StardustUpdate{incrementVersion}.zip"))
+            {
+                Console.WriteLine("New Game Update files downloaded! Replacing old files.");
+                Console.WriteLine("Do not touch any game files!");
+                ZipFile.ExtractToDirectory(@$".\StardustUpdate{incrementVersion}.zip", @"..\", true);
+            }
+            else
+            {
+                Console.WriteLine($"ERROR : Unable to open the zip file 'StardustUpdate{incrementVersion}.zip' containing new game files. Aborting!");
+                return;
+            }
+            if ((incrementVersion + 1) > CurrentFirebaseGameVersion) break;
+            else incrementVersion++;
+        } while (incrementVersion != CurrentFirebaseGameVersion);
+        
 
         Console.WriteLine("Game Update patched!");
 
-        File.Delete(NewUpdate);
+        incrementVersion = CurrentGameVersion;
+        do
+        {
+            if (File.Exists(@$".\StardustUpdate{incrementVersion}.zip"))
+            {
+                File.Delete(@$".\StardustUpdate{incrementVersion}.zip");
+            }
+            if ((incrementVersion + 1) > CurrentFirebaseGameVersion) break;
+            else incrementVersion++;
+        } while (incrementVersion != CurrentFirebaseGameVersion);
 
         // Update the launcher cfg
-        if(File.Exists(@"..\LauncherSettings.cfg"))
+        if (File.Exists(@"..\LauncherSettings.cfg"))
         {
             string[] lines = File.ReadAllLines(@"..\LauncherSettings.cfg");
 
@@ -175,7 +202,7 @@ partial class Program
         Console.WriteLine("Downloading Game files");
         manager.DownloadGame();
 
-        if (manager.GetLastError() == "")
+        if (manager.GetLastStorageError() == 0)
         {
             Console.WriteLine("New Game Update files downloaded! Replacing old files.");
             Console.WriteLine("Do not touch any game files!");

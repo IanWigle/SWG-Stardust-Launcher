@@ -59,8 +59,6 @@ using ::firebase::auth::kAuthErrorNone;
 using ::firebase::auth::OAuthProvider;
 using ::firebase::auth::SignInResult;
 using ::firebase::auth::User;
-using ::firebase::auth::UserInfoInterface;
-using ::firebase::auth::UserMetadata;
 using ::firebase::auth::PhoneAuthProvider;
 // Realtime Database namespaces
 using ::firebase::database::Database;
@@ -77,7 +75,11 @@ using ::firebase::storage::Error::kErrorObjectNotFound;
 #define FIREBASE_CONFIG_STRING ""
 #endif  // FIREBASE_CONFIG
 
+#pragma region Custom Classes
+#include "FirebaseManager.h"
 #include "Logger.h"
+#pragma endregion Custom Classes
+
 #pragma region Logging
 static void LogMessage(const char* format, ...)
 {
@@ -105,7 +107,11 @@ bool WaitForFuture(const FutureBase& future, const char* fn,
     }
 
     // Wait for future to complete.
-    LogMessage("  Calling %s...", fn);
+    //LogMessage("Calling %s...", fn);
+    std::string calling = fn;
+    calling += " Calling ...";
+    FirebaseLib::FirebaseManager::GetLogger()->LogFirebase(calling.c_str());
+
     while (future.status() == ::firebase::kFutureStatusPending) {
         if (ProcessEvents(100)) return true;
     }
@@ -114,18 +120,28 @@ bool WaitForFuture(const FutureBase& future, const char* fn,
     if (log_error) {
         const AuthError error = static_cast<AuthError>(future.error());
         if (error == expected_error) {
+            calling = fn;
             const char* error_message = future.error_message();
             if (error_message) {
-                LogMessage("%s completed as expected", fn);
+                //LogMessage("%s completed as expected", fn);
+                calling += " completed as expected.";
             }
             else {
-                LogMessage("%s completed as expected, error: %d '%s'", fn, error,
-                    error_message);
+                //LogMessage("%s completed as expected, error: %d '%s'", fn, error,
+                //    error_message);
+                calling += " completed as expected, error: ";
+                calling.append(error_message);
             }
+            FirebaseLib::FirebaseManager::GetLogger()->LogFirebase(calling.c_str());
         }
         else {
-            LogMessage("ERROR: %s completed with error: %d, `%s`", fn, error,
-                future.error_message());
+            calling = "ERROR: ";
+            calling.append(fn);
+            calling += "compelted with error: ";
+            calling.append(future.error_message());
+            //LogMessage("ERROR: %s completed with error: %d, `%s`", fn, error,
+            //    future.error_message());
+            FirebaseLib::FirebaseManager::GetLogger()->LogFirebase(calling.c_str());
         }
     }
     return false;
@@ -146,9 +162,7 @@ static void WaitForCompletion(const firebase::FutureBase& future, const char* na
 
 #pragma endregion Wait Calls
 
-#pragma region Custom Classes
-#include "FirebaseManager.h"
-#pragma endregion Custom Classes
+
 
 #pragma region StaticIntegers
 extern "C" static const int PhoneWaitIntervalMs = 300;

@@ -5,6 +5,8 @@
 using FirebaseLib::UserType::Type;
 
 const char* FirebaseLib::FirebaseManager::kStorageUrl = nullptr;
+FirebaseLib::Logger* FirebaseLib::FirebaseManager::m_Logger = nullptr;
+
 FirebaseLib::FirebaseManager::FirebaseManager() :
     m_Email(""),
     m_Password(""),
@@ -12,15 +14,21 @@ FirebaseLib::FirebaseManager::FirebaseManager() :
     m_App(nullptr)
 {
     m_Logger = new Logger();
+
+    LogFirebase("FirebaseManager::Constructor() started.");
     SetupApp();
     SetupAuth();
     SetupDatabase();
     SetupCloudStorage();
+    LogFirebase("FirebaseManager::Constructor() finished.");
 }
 
 FirebaseLib::FirebaseManager::~FirebaseManager()
 {
+    LogFirebase("FirebaseManager::Deconstructor() started.");
     Destroy();
+    LogFirebase("FirebaseManager::Deconstructor() finished.");
+    SAFE_DELETE(m_Logger);
 }
 
 int FirebaseLib::FirebaseManager::NumberOfGameZips()
@@ -34,8 +42,23 @@ int FirebaseLib::FirebaseManager::NumberOfGameZips()
 
     WaitForCompletion(f1, "FirebaseManager::NumberOfGameZips()");
 
-    LogFirebase("FirebaseManager::NumberOfGameZips() : There are %i zips for the full game to download.", f1.result()->value().int64_value());
+    std::string message = "FirebaseManager::NumberOfGameZips() : There are " + std::to_string(f1.result()->value().int64_value()) + " zips for the full game to download.";
+    LogFirebase(message);
     return f1.result()->value().int64_value();
+}
+
+bool FirebaseLib::FirebaseManager::UnderMaintenance()
+{
+    LogFirebase("FirebaseManager::UnderMaintenance() : Getting UnderMaintenance flag.");
+
+    firebase::database::DatabaseReference ref = m_Database->GetReference("ClientData");
+
+    firebase::Future<firebase::database::DataSnapshot> f1 =
+        ref.Child("UnderMaintenance").GetValue();
+
+    WaitForCompletion(f1, "FirebaseManager::UnderMaintenance()");
+
+    return f1.result()->value().bool_value();
 }
 
 void FirebaseLib::FirebaseManager::LogLauncher(const char* log)
@@ -43,11 +66,14 @@ void FirebaseLib::FirebaseManager::LogLauncher(const char* log)
     m_Logger->LogLauncher(log);
 }
 
+FirebaseLib::Logger* FirebaseLib::FirebaseManager::GetLogger()
+{
+    return m_Logger;
+}
+
 void FirebaseLib::FirebaseManager::Destroy()
 {
     HANDLE_CURRENT_ACCOUNT
-
-    SAFE_DELETE(m_Logger);
 
     SAFE_DELETE(m_Storage);
 
@@ -58,28 +84,41 @@ void FirebaseLib::FirebaseManager::Destroy()
     SAFE_DELETE(m_App);
 }
 
-void FirebaseLib::FirebaseManager::LogFirebase(const char* log, ...)
+void FirebaseLib::FirebaseManager::LogFirebase(std::string message)
 {
-    m_Logger->LogFirebase(log);
+    m_Logger->LogFirebase(message.c_str());
 }
 
 bool FirebaseLib::FirebaseManager::Register()
 {
     HANDLE_CURRENT_ACCOUNT
 
+    Future<void> update_future;
+
+    LogFirebase("FirebaseManager::Register() started.");
+
     Future<::firebase::auth::User*> sign_in_future =
         m_Auth->CreateUserWithEmailAndPassword(m_Email.c_str(), m_Password.c_str());
     WaitForFuture(sign_in_future, "FirebaseManager::Register()", kAuthErrorNone);
-    m_Auth->current_user()->SendEmailVerification();
 
-    const AuthError error = static_cast<AuthError>(sign_in_future.error());
-    Future<void> update_future;
+    LogFirebase("FirebaseManager::Register() : WaitForFuture to create account complete.");
+
+    firebase::Future<void> emailVerFuture = m_Auth->current_user()->SendEmailVerification();
+    LogFirebase("FirebaseManager::Register() : Sending Email Verification.");
+    WaitForFuture(emailVerFuture,"FirebaseManager::Register()::SendEmailVerification", kAuthErrorNone);
+    if (static_cast<AuthError>(emailVerFuture.error()) != kAuthErrorNone)
+    {
+        m_LastAuthError = static_cast<AuthError>(emailVerFuture.error());
+        LogFirebase(emailVerFuture.error_message());
+    }
+
+    const AuthError error = static_cast<AuthError>(sign_in_future.error() | emailVerFuture.error());
+    
     switch (error)
     {
     case kAuthErrorNone:
     {
         m_LastAuthError = kAuthErrorNone;
-        m_SignedUser = sign_in_future;
 
         User::UserProfile profile;
         profile.display_name = m_DisplayName.c_str();
@@ -87,35 +126,41 @@ bool FirebaseLib::FirebaseManager::Register()
         update_future = m_Auth->current_user()->UpdateUserProfile(profile);
 
         WaitForFuture(update_future, "FirebaseManager::Register()::UpdateProfile", kAuthErrorNone);
+
+        LogFirebase("FirebaseManager::Register() : WaitForFuture to update account profile complete.");
+
         if(static_cast<AuthError>(update_future.error()) != kAuthErrorNone)
         {
             m_LastAuthErrorString = update_future.error_message();
             m_LastAuthError = error;
-            return false;
+
+            LogFirebase("FirebaseManager::Register() : " + std::string(update_future.error_message()));
+
             goto Failure;
         }
 
+        LogFirebase("FirebaseManager::Register() : Finished call.");
         return true;
     }        
     default:
-        m_LastAuthErrorString = sign_in_future.error_message();
+        m_LastAuthErrorString = sign_in_future.error() == 0 ? emailVerFuture.error_message() :  sign_in_future.error_message();
+
         m_LastAuthError = error;
-        LogFirebase("FirebaseManager::Register() : %s", sign_in_future.error_message());
+        LogFirebase("FirebaseManager::Register() : " + std::string(sign_in_future.error_message()));
         goto Failure;
     }
 
 Failure:
     LogFirebase("FirebaseManager::Register() : Finished call.");
-        return false;
-    }
+    return false;
 }
 
 bool FirebaseLib::FirebaseManager::Login()
 {
-    if (StilSignedIn())
+    if (StillSignedIn())
         HANDLE_CURRENT_ACCOUNT
 
-    //m_Auth->
+    LogFirebase("FirebaseManager::Login() started.");
     Future<User*> sign_in_future =
         m_Auth->SignInWithEmailAndPassword(m_Email.c_str(), m_Password.c_str());
 
@@ -126,12 +171,12 @@ bool FirebaseLib::FirebaseManager::Login()
     {
     case kAuthErrorNone:
         m_LastAuthError = kAuthErrorNone;
-        m_SignedUser = sign_in_future;
         break;
     default:
         m_LastAuthErrorString = sign_in_future.error_message();
         m_LastAuthError = error;
         SignOut();
+        LogFirebase("FirebaseManager::Login() : " + std::string(sign_in_future.error_message()));
         return false;
     }
 
@@ -140,17 +185,19 @@ bool FirebaseLib::FirebaseManager::Login()
         m_LastAuthErrorString = "FirebaseManager::Login() : Not verified account! Please check your email.";
         m_LastAuthError = firebase::auth::kAuthErrorUnverifiedEmail;
         SignOut();
+        //LogFirebase("FirebaseManager::Login() : Not verified account! Please check your email.");
         return false;
     }
 
     m_DisplayName = m_Auth->current_user()->display_name();
 
+    //LogFirebase("FirebaseManager::Login() finished.");
     return true;
 }
 
 void FirebaseLib::FirebaseManager::SignOut()
 {
-    if (StilSignedIn())
+    if (StillSignedIn())
     {
         switch (GetAccountType())
         {
@@ -194,7 +241,7 @@ void FirebaseLib::FirebaseManager::SetDisplayName(const char* name)
     m_DisplayName = name;
 }
 
-bool FirebaseLib::FirebaseManager::StilSignedIn()
+bool FirebaseLib::FirebaseManager::StillSignedIn()
 {
     return m_Auth->current_user() != nullptr;
 }
@@ -216,19 +263,16 @@ void FirebaseLib::FirebaseManager::SignInAnon()
 FirebaseLib::UserType::Type FirebaseLib::FirebaseManager::GetAccountType()
 {
     if (m_Auth->current_user() == nullptr)
-        Type::Error;
-    else
     {
         return Type::Error;
     }
     else if(m_Auth->current_user()->is_anonymous())
-        {
-            return Type::Anonymous;
-        }
-        else if (m_Auth->current_user()->is_email_verified())
-        {
-            return Type::EmailVerified;
-        }
+    {
+        return Type::Anonymous;
+    }
+    else if (m_Auth->current_user()->is_email_verified())
+    {
+        return Type::EmailVerified;
     }
 
     return Type::Error;
@@ -303,6 +347,8 @@ std::string FirebaseLib::FirebaseManager::GetLauncherVersion()
 
     WaitForCompletion(f1, "FirebaseManager::GetLauncherVersion()");
 
+    LogFirebase("FirebaseManager::GetLauncherVersion() : Version is " + std::string(f1.result()->value().string_value()));
+
     return f1.result()->value().string_value();
 }
 
@@ -315,97 +361,127 @@ std::string FirebaseLib::FirebaseManager::GetGameVersion()
 
     WaitForCompletion(f1, "FirebaseManager::GetGameVersion()");
 
+    LogFirebase("FirebaseManager::GetGameVersion() : Version is " + std::string(f1.result()->value().string_value()));
+    return f1.result()->value().string_value();
+}
+
+std::string FirebaseLib::FirebaseManager::GetUpdaterVersion()
+{
+    firebase::database::DatabaseReference ref = m_Database->GetReference("ClientData");
+
+    firebase::Future<firebase::database::DataSnapshot> f1 =
+        ref.Child("UpdaterVersion").GetValue();
+
+    WaitForCompletion(f1, "FirebaseManager::GetUpdaterVersion()");
+
+    LogFirebase("FirebaseManager::GetUpdaterVersion() : Version is " + std::string(f1.result()->value().string_value()));
     return f1.result()->value().string_value();
 }
 
 void FirebaseLib::FirebaseManager::DownloadLauncher()
-{    
-    //StorageReference fileRef = m_CloudRootReference.Child("SWGLauncher.zip");
+{
+    std::string fullpath = GetCurrentDirectoryPath() + "\\" + m_LauncherString;
+
+    LogFirebase("FirebaseManager::DownloadLauncher() : Starting Download");
     DownloadListener listener;
-    Future<size_t> fileFuture = m_CloudRootReference.GetFile("SWGLauncher.zip", &listener, nullptr);
+
+    StorageReference fileRef = m_CloudRootReference.Child(m_LauncherString);
+    Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
     WaitForCompletion(fileFuture, "FirebaseManager::DownloadLauncher()");
 
-    const AuthError error = static_cast<AuthError>(fileFuture.error());
-    m_LastAuthError = error;
-    m_LastAuthErrorString = fileFuture.error_message();
+    const StorageError error = static_cast<::firebase::storage::Error>(fileFuture.error());
+    m_LastStorageError = error;
+    m_LastStorageErrorString = fileFuture.error_message();
+    LogFirebase("FirebaseManager::DownloadLauncher() : Finished Download");
 }
 
-void FirebaseLib::FirebaseManager::DownloadGameUpdate()
+void FirebaseLib::FirebaseManager::DownloadGameUpdate(int version)
 {
-    TCHAR NPath[MAX_PATH];
-    GetCurrentDirectory(MAX_PATH, NPath);
+    LogFirebase("FirebaseManager::DownloadGameUpdate() : Starting Download");
 
-    std::wstring wpath = NPath;
-    std::string spath(wpath.begin(), wpath.end());
+    std::string filename = m_GameUpdateString + std::to_string(version) + ".zip";
 
-    LogMessage(spath.c_str());
-
-    std::string filename = "StardustUpdate" + std::to_string(version) + ".zip";
-
-    std::string fullpath = spath + "\\" + filename;
+    std::string fullpath = GetCurrentDirectoryPath() + "\\" + filename;
 
     StorageReference fileRef = m_CloudRootReference.Child(filename);
 
     DownloadListener listener;
 
     Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
+    LogFirebase("FirebaseManager::DownloadGameUptade() downloading " + filename);
     WaitForCompletion(fileFuture, "FirebaseManager::DownloadGameUpdate()");
+    
+    m_LastStorageErrorString = fileFuture.error_message();
+    m_LastStorageError = static_cast<::firebase::storage::Error>(fileFuture.error());
 
-    const StorageError error = static_cast<::firebase::storage::Error>(fileFuture.error());
-    m_LastAuthErrorString = fileFuture.error_message();
-
-    if (static_cast<::firebase::storage::Error>(fileFuture.error()) != ::firebase::storage::Error::kErrorNone)
+    if (m_LastStorageError != ::firebase::storage::Error::kErrorNone)
     {
-        m_LastAuthErrorString = fileFuture.error_message();
-        m_LastStorageError = error;
-        LogMessage("ERROR: %s", m_LastAuthErrorString.c_str());
+        LogMessage("ERROR: %s", m_LastStorageErrorString.c_str());
+        LogFirebase("FirebaseManager::DownloadGameUpdate() : " + std::string(fileFuture.error_message()));
     }
+    LogFirebase("FirebaseManager::DownloadGameUpdate() : Finished Download");
 }
 
 void FirebaseLib::FirebaseManager::DownloadGame()
 {
-    TCHAR NPath[MAX_PATH];
-    GetCurrentDirectory(MAX_PATH, NPath);
+    LogFirebase("FirebaseManager::DownloadGame() : Starting Download");
 
-    std::wstring wpath = NPath;
-    std::string spath(wpath.begin(), wpath.end());
-
-    LogMessage(spath.c_str());
+    std::string path = GetCurrentDirectoryPath();
 
     int numgameFiles = NumberOfGameZips();
     for (int i = 1; i < numgameFiles + 1; i++)
     {
-        std::string fileName = "StardustGameFiles" + std::to_string(i) + ".zip";
-        std::string fullpath = spath + "\\" + fileName;
+        std::string fileName = m_GameFilePartString + std::to_string(i) + ".zip";
+        std::string fullpath = path + "\\" + fileName;
 
         StorageReference fileRef = m_CloudRootReference.Child(fileName);
 
         DownloadListener listener;
 
         Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
-        LogMessage("Downloading %s", fileName.c_str());
+        LogFirebase("FirebaseManager::DownloadGame() : Downloading " + fileName);
         WaitForCompletion(fileFuture, "FirebaseManager::DownloadGame()");
 
-        const ::firebase::storage::Error error = static_cast<::firebase::storage::Error>(fileFuture.error());
-        m_LastAuthErrorString = fileFuture.error_message();
-        if (error != ::firebase::storage::Error::kErrorNone)
+        m_LastStorageError = static_cast<::firebase::storage::Error>(fileFuture.error());;
+        m_LastStorageErrorString = fileFuture.error_message();
+
+        if (m_LastStorageError != ::firebase::storage::Error::kErrorNone)
         {
-            LogMessage("ERROR: %s", m_LastAuthErrorString.c_str());
-            LogFirebase("FirebaseManager::DownloadGameUpdate() : %s", m_LastAuthErrorString.c_str());
+            LogMessage("ERROR: %s", m_LastStorageErrorString.c_str());
+            LogFirebase("FirebaseManager::DownloadGameUpdate() : " + m_LastStorageErrorString);
         }
     }
     LogFirebase("FirebaseManager::DownloadGame() : Finished Download");
-    }
+}
 
-bool FirebaseLib::FirebaseManager::IsThereUpdate()
+void FirebaseLib::FirebaseManager::DownloadNewUpdater()
 {
-    StorageReference storageFile = m_CloudRootReference.Child("StardustUpdate.zip");
+    std::string path = GetCurrentDirectoryPath();
 
-    return false;
+    std::string fullpath = GetCurrentDirectoryPath() + "\\" + m_UpdaterString;
+
+    StorageReference fileRef = m_CloudRootReference.Child(m_UpdaterString);
+
+    DownloadListener listener;
+
+    Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
+    LogFirebase("FirebaseManager::DownloadNewUpdater() downloading " + m_UpdaterString);
+    WaitForCompletion(fileFuture, "FirebaseManager::DownloadNewUpdater()");
+
+    m_LastStorageError = static_cast<::firebase::storage::Error>(fileFuture.error());
+    m_LastStorageErrorString = fileFuture.error_message();
+
+    if (m_LastStorageError != ::firebase::storage::Error::kErrorNone)
+    {
+        LogMessage("ERROR: %s", m_LastStorageErrorString.c_str());
+        LogFirebase("FirebaseManager::DownloadGameUpdate() : " + std::string(fileFuture.error_message()));
+    }
+    LogFirebase("FirebaseManager::DownloadGameUpdate() : Finished Download");
 }
 
 void FirebaseLib::FirebaseManager::SetupApp()
 {
+    LogFirebase("FirebaseManager::SetupApp() : Starting Firebase setup");
     ChangeToFileDirectory(
         FIREBASE_CONFIG_STRING);  // NOLINT
 #ifdef _WIN32
@@ -415,7 +491,7 @@ void FirebaseLib::FirebaseManager::SetupApp()
 #endif  // _WIN32
 
     m_App = App::Create();
-    LogMessage("Created the Firebase app %x.",
+    LogMessage("FirebaseManager::SetupApp() : Created the Firebase app %x.",
         static_cast<int>(reinterpret_cast<intptr_t>(m_App)));
 
     void* initialize_targets[] = { &m_Auth, &m_Database, &m_Storage };
@@ -442,11 +518,11 @@ void FirebaseLib::FirebaseManager::SetupApp()
             void** targets = reinterpret_cast<void**>(data);
             ::firebase::InitResult result;
             firebase::storage::Storage* storage =
-                firebase::storage::Storage::GetInstance(app, nullptr, &result);
+                firebase::storage::Storage::GetInstance(app, kStorageUrl, &result);
             *reinterpret_cast<::firebase::storage::Storage**>(targets[2]) = storage;
             LogMessage("FirebaseManager::SetupApp() : Initialized storage with URL %s, %s",
-                       kStorageUrl ? kStorageUrl : "(null)",
-                       storage->url().c_str());
+                kStorageUrl ? kStorageUrl : "(null)",
+                storage->url().c_str());
             return result;
         } };
 
@@ -455,6 +531,7 @@ void FirebaseLib::FirebaseManager::SetupApp()
         sizeof(initializers) / sizeof(initializers[0]));
 
     WaitForCompletion(initializer.InitializeLastResult(), "FirebaseManager::SetupApp()");
+    LogFirebase("FirebaseManager::SetupApp() : Finished Firebase setup");
 }
 
 void FirebaseLib::FirebaseManager::SetupAuth()
@@ -490,4 +567,15 @@ void FirebaseLib::FirebaseManager::SetupCloudStorage()
     m_CloudRootReference = m_Storage->GetReference("Root/");
     m_Storage->set_max_download_retry_time(MaxDownloadSpeed);
     m_Storage->set_max_operation_retry_time(MaxDownloadSpeed);
+}
+
+std::string FirebaseLib::FirebaseManager::GetCurrentDirectoryPath()
+{
+    TCHAR NPath[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, NPath);
+
+    std::wstring wpath = NPath;
+    std::string spath(wpath.begin(), wpath.end());
+
+    return spath;
 }
