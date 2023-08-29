@@ -49,6 +49,8 @@ namespace FirebaseLib
 		inline AuthError GetLastAuthError() { return m_LastAuthError; }
 		inline std::string GetLastAuthErrorString() { return m_LastAuthErrorString; }
 
+		void ChangeEmail(const char* newEmail);
+
 		std::string GetUserId();
 
 		// Database functions;
@@ -57,6 +59,9 @@ namespace FirebaseLib
 		std::string GetUpdaterVersion();
 		int NumberOfGameZips();
 		bool UnderMaintenance();
+		// Will return true if the name is already registered OR if there is a error.
+		// Returns false if there is no error AND the name isn't being used.
+		bool DoesUsernameExistAlready(std::string displayName);
 
 		inline DatabaseError GetLastDatabaseError() { return m_LastDatabaseError; }
 		inline std::string GetLastDatabaseErrorString() { return m_LastDatabaseErrorString; }
@@ -70,7 +75,9 @@ namespace FirebaseLib
 		inline StorageError GetLastStorageError() { return m_LastStorageError; }
 		inline std::string GetLastStorageErrorString() { return m_LastAuthErrorString; }
 
+		// Log
 		void LogLauncher(const char* log);
+		void LogUpdater(const char* log);
 
 		static class Logger* GetLogger();
 
@@ -228,6 +235,10 @@ namespace FirebaseLib
 		{
 			return manager->LogLauncher(log);
 		}
+		FirebaseLib_API void FirebaseManager_LogUpdater(FirebaseManager* manager, const char* log)
+		{
+			return manager->LogUpdater(log);
+		}
 		FirebaseLib_API int FirebaseManager_GetLastStorageError(FirebaseManager* manager)
 		{
 			return manager->GetLastStorageError();
@@ -247,6 +258,18 @@ namespace FirebaseLib
 		FirebaseLib_API bool FirebaseManager_UnderMaintenance(FirebaseManager* manager)
 		{
 			return manager->UnderMaintenance();
+		}
+		FirebaseLib_API bool FirebaseManager_DoesUserNameExist(FirebaseManager* manager, const char* username)
+		{
+			return manager->DoesUsernameExistAlready(username);
+		}
+		FirebaseLib_API void FirebaseManager_TestLimitOfChildNodes(FirebaseManager* manager)
+		{
+			return manager->TestLimitOfChildNodes();
+		}
+		FirebaseLib_API void FirebaseManager_UpdateEmail(FirebaseManager* manager, const char* newEmail)
+		{
+			return manager->ChangeEmail(newEmail);
 		}
 	}
 }

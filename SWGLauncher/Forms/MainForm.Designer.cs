@@ -46,10 +46,12 @@
             groupBox1 = new GroupBox();
             RegisterEmailBox = new TextBox();
             Options = new TabPage();
+            serverBox = new ComboBox();
             ResetPasswordButton = new Button();
             PlayMusicToggle = new CheckBox();
             pictureBox1 = new PictureBox();
-            serverBox = new ComboBox();
+            label1 = new Label();
+            ChangeEmail = new Button();
             tabControl1.SuspendLayout();
             Login.SuspendLayout();
             groupBox5.SuspendLayout();
@@ -227,6 +229,8 @@
             // 
             // Options
             // 
+            Options.Controls.Add(ChangeEmail);
+            Options.Controls.Add(label1);
             Options.Controls.Add(serverBox);
             Options.Controls.Add(ResetPasswordButton);
             Options.Controls.Add(PlayMusicToggle);
@@ -237,6 +241,15 @@
             Options.TabIndex = 2;
             Options.Text = "Options";
             Options.UseVisualStyleBackColor = true;
+            // 
+            // serverBox
+            // 
+            serverBox.FormattingEnabled = true;
+            serverBox.Location = new Point(8, 57);
+            serverBox.Name = "serverBox";
+            serverBox.Size = new Size(206, 23);
+            serverBox.TabIndex = 2;
+            serverBox.SelectedIndexChanged += serverBox_SelectedIndexChanged;
             // 
             // ResetPasswordButton
             // 
@@ -272,14 +285,25 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
-            // serverBox
+            // label1
             // 
-            serverBox.FormattingEnabled = true;
-            serverBox.Location = new Point(6, 35);
-            serverBox.Name = "serverBox";
-            serverBox.Size = new Size(206, 23);
-            serverBox.TabIndex = 2;
-            serverBox.SelectedIndexChanged += serverBox_SelectedIndexChanged;
+            label1.AutoSize = true;
+            label1.Location = new Point(8, 39);
+            label1.Name = "label1";
+            label1.Size = new Size(39, 15);
+            label1.TabIndex = 3;
+            label1.Text = "Server";
+            // 
+            // ChangeEmail
+            // 
+            ChangeEmail.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ChangeEmail.Location = new Point(55, 116);
+            ChangeEmail.Name = "ChangeEmail";
+            ChangeEmail.Size = new Size(120, 44);
+            ChangeEmail.TabIndex = 4;
+            ChangeEmail.Text = "Change Email";
+            ChangeEmail.UseVisualStyleBackColor = true;
+            ChangeEmail.Click += ChangeEmail_Click;
             // 
             // MainForm
             // 
@@ -342,5 +366,7 @@
         private TextBox RegisterDisplayNameBox;
         private CheckBox RememberMeCheckBox;
         private ComboBox serverBox;
+        private Label label1;
+        private Button ChangeEmail;
     }
 }

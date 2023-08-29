@@ -28,7 +28,7 @@ partial class Program
             
 
             // Hard coded version for updater.
-            const double Version = 0.2;
+            const double Version = 0.4;
 
             Console.WriteLine($"Welcome to the SWG Stardust Updater! Version {Version}.");
 
@@ -69,6 +69,7 @@ partial class Program
 
     static void DownloadLauncher()
     {
+        manager.LogUpdater("Downloading new Launcher");
         const string NewLauncher = @".\SWGLauncher.zip";
 
         // If there is a local version of the launcher files already, delete it. It's likely old.
@@ -79,6 +80,7 @@ partial class Program
 
         Console.WriteLine("Downloading the new client files.");
         manager.DownloadClient();
+        manager.LogUpdater("Download finished.");
 
         // Check if the files were successfully downloaded by checking if the file exists.
         if (File.Exists(NewLauncher))
@@ -90,16 +92,24 @@ partial class Program
         else
         {
             Console.WriteLine("ERROR: Unable to open the zip file containing new launcher. Aborting!");
+            Console.WriteLine(manager.GetLastStorageErrorString());
+            manager.LogUpdater(manager.GetLastStorageErrorString());
             return;
         }
 
         Console.WriteLine("New client files were replaced!");
+
+        if (File.Exists(@"..\CustomInstructions.txt"))
+        {
+            HandleCustomInstructions();
+        }
 
         File.Delete(NewLauncher);
     }
 
     static void DownloadUpdate()
     {
+        manager.LogUpdater("Downloading new game update");
         const string NewUpdate = @".\StardustUpdate.zip";
         int CurrentGameVersion = 1;
         int CurrentFirebaseGameVersion = int.Parse(manager.GetGameVersion());
@@ -134,6 +144,7 @@ partial class Program
         do
         {
             Console.WriteLine($"Downloading StardustUpdate{incrementVersion}");
+            manager.LogUpdater($"Downloading new update {incrementVersion}");
             manager.DownloadGameUpdate(incrementVersion);
             if ((incrementVersion + 1) > CurrentFirebaseGameVersion) break;
             else incrementVersion++;
@@ -179,6 +190,12 @@ partial class Program
             lines[5] = $"GameVersion:{manager.GetGameVersion()}";
             File.WriteAllLines(@"..\LauncherSettings.cfg", lines.ToArray());
         }
+
+        if (File.Exists(@"..\CustomInstructions.txt"))
+        {
+            HandleCustomInstructions();
+    }
+
     }
 
     static void DownloadGame()
@@ -235,4 +252,44 @@ partial class Program
     }
 }
 
+    static void HandleCustomInstructions()
+    {
+        string[] instructions = File.ReadAllLines(@"..\CustomInstructions.txt");
 
+        foreach(string instr in instructions)
+        {
+            string command = instr.Split(':')[0];
+            string file = instr.Split(':')[1];
+
+            try
+            {
+                if (command == "DELETE")
+                {
+                    File.Delete($@"{file}");
+                }
+                else if (command == "CREATE")
+                {
+                    if (File.Exists($@"{file}")) continue;
+                    FileStream local_file = File.Create($@"{file}");
+                    local_file.Write(Encoding.ASCII.GetBytes(instr.Split(':')[2]));
+                }
+                else if (command == "MOVE")
+                {
+                    if (!File.Exists($@"{file}")) continue;
+                    string filename = file.Split('\\').Last();
+                    File.Move($@"{file}", $@"{instr.Split(':')[2]}{filename}");
+                }
+                else
+                {
+                    throw new Exception("Command parsed in CustomInstructions.txt is not valid!");
+                }
+            }
+            catch(Exception ex)
+            {
+                manager.LogUpdater(ex.Message);
+            }            
+        }
+
+        File.Delete(@"..\CustomInstructions.txt");
+    }
+}

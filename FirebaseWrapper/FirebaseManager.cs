@@ -158,6 +158,11 @@ namespace SWGLauncher
             FirebaseManager_LogLauncher(manager, log);
         }
 
+        public void LogUpdater(string log)
+        {
+            FirebaseManager_LogUpdater(manager, log);
+        }
+
         public int GetLastStorageError()
         {
             return FirebaseManager_GetLastStorageError(manager);
@@ -185,6 +190,16 @@ namespace SWGLauncher
         public bool GetUnderMaintenance()
         {
             return FirebaseManager_UnderMaintenance(manager);
+        }
+
+        public bool DoesUserNameExist(string username)
+        {
+            return FirebaseManager_DoesUserNameExist(manager, username);
+        }
+
+        public void ChangeEmail(string newEmail)
+        {
+            FirebaseManager_UpdateEmail(manager, newEmail);
         }
 
         [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -260,6 +275,9 @@ namespace SWGLauncher
         private static extern int FirebaseManager_LogLauncher(IntPtr value, string log);
 
         [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int FirebaseManager_LogUpdater(IntPtr value, string log);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_GetLastStorageErrorString(IntPtr value, ResponseDelegate response);
 
         [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -273,6 +291,12 @@ namespace SWGLauncher
 
         [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern bool FirebaseManager_UnderMaintenance(IntPtr value);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern bool FirebaseManager_DoesUserNameExist(IntPtr value, string username);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_UpdateEmail(IntPtr value, string newEmail);
 
         private static IntPtr manager;
     }

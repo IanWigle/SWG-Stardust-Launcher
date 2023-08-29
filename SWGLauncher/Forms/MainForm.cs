@@ -38,10 +38,17 @@ namespace SWGLauncher.Forms
                 MessageBox.Show("Please provide a email address", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 return;
             }
-            if (password == "" || password.Length <= 4)
+            else if (password == "" || password.Length <= 4)
             {
                 Program.GetFirebaseManager().LogLauncher("MainForm : Your password is too short!");
                 MessageBox.Show("Your password is too short!", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                return;
+            }
+            else if (Program.GetFirebaseManager().DoesUserNameExist(displayname) == false)
+            {
+                Program.GetFirebaseManager().LogLauncher($"MainForm : The name '{displayname}' is already being used.");
+                MessageBox.Show($"The name '{displayname}' is already being used. Please choose another", "ERROR!", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                MessageBox.Show(Program.GetFirebaseManager().GetLastAuthErrorString());
                 return;
             }
 
@@ -378,12 +385,12 @@ namespace SWGLauncher.Forms
 
         private void serverBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if((serverBox.SelectedItem as string) == NEWSERVER)
+            if ((serverBox.SelectedItem as string) == NEWSERVER)
             {
                 AddServer addServer = new AddServer();
                 addServer.ShowDialog();
 
-                if(addServer.Successful)
+                if (addServer.Successful)
                 {
                     IPData newServer = new IPData(addServer.ServerIP, addServer.ServerName, addServer.ServerPort);
                     Program.IPAddresses.Add(newServer);
@@ -393,9 +400,9 @@ namespace SWGLauncher.Forms
             }
             else
             {
-                foreach(IPData server in Program.IPAddresses)
+                foreach (IPData server in Program.IPAddresses)
                 {
-                    if((serverBox.SelectedItem as string) == server.ServerName)
+                    if ((serverBox.SelectedItem as string) == server.ServerName)
                     {
                         Program.LastIP = server;
                         break;
@@ -410,14 +417,21 @@ namespace SWGLauncher.Forms
             foreach (IPData server in Program.IPAddresses)
             {
                 serverBox.Items.Add(server.ServerName);
-                if(server.ServerName == Program.LastIP.ServerName)
+                if (server.ServerName == Program.LastIP.ServerName)
                 {
-                    serverBox.SelectedIndex = serverBox.Items.IndexOf(serverBox.Items[serverBox.Items.Count-1]);
+                    serverBox.SelectedIndex = serverBox.Items.IndexOf(serverBox.Items[serverBox.Items.Count - 1]);
                     continue;
                 }
             }
             
             serverBox.Items.Add(NEWSERVER);
+            //serverBox.Items.Add(MANAGERSERVERS);
+        }
+
+        private void ChangeEmail_Click(object sender, EventArgs e)
+        {
+            ConfirmEmailChange window = new ConfirmEmailChange();
+            window.ShowDialog();
         }
     }
 }

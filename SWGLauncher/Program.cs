@@ -18,7 +18,7 @@ namespace SWGLauncher
         public static int FirstLaunch { get; private set; }
 
         // Version Numbers
-        public const double Launcherversion = 1.4;
+        public const double Launcherversion = 1.8;
         public static double UpdaterVersion { get; set; }
         public static double GameVersion { get; private set; }
         public static double FirebaseLauncherVersion { get; private set; }

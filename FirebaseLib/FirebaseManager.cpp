@@ -61,9 +61,46 @@ bool FirebaseLib::FirebaseManager::UnderMaintenance()
     return f1.result()->value().bool_value();
 }
 
+bool FirebaseLib::FirebaseManager::DoesUsernameExistAlready(std::string displayName)
+{
+    firebase::database::DatabaseReference ref = m_Database->GetReference("Users");
+    firebase::Future<firebase::database::DataSnapshot> f1 =
+        ref.Child(displayName).GetValue();
+
+    LogFirebase("FirebaseManager::DoesUsernameExistAlready : Check if display name is in database");
+    WaitForCompletion(f1, "Check if display name is in database");
+    
+    if (f1.error() != DatabaseError::kErrorNone)
+    {
+        LogFirebase(f1.error_message());
+        m_LastDatabaseErrorString = f1.error_message();
+        return true;
+    }   
+
+    std::string log = "FirebaseManager::DoesUsernameExistAlready : ";
+    LogFirebase(std::string(log + (f1.result()->exists() == true ? "Exists" : "Doesn't Exist")));
+    LogFirebase(std::string(log + (f1.result()->is_valid() == true ? "Is Valid" : "Isn't Valid")));
+    if (f1.result()->exists())
+    {
+        LogFirebase("FirebaseManager::DoesUsernameExistAlready : The username " + displayName + " is already in the database.");
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+    return false;
+}
+
 void FirebaseLib::FirebaseManager::LogLauncher(const char* log)
 {
     m_Logger->LogLauncher(log);
+}
+
+void FirebaseLib::FirebaseManager::LogUpdater(const char* log)
+{
+    m_Logger->LogUpdater(log);
 }
 
 FirebaseLib::Logger* FirebaseLib::FirebaseManager::GetLogger()
@@ -139,6 +176,10 @@ bool FirebaseLib::FirebaseManager::Register()
             goto Failure;
         }
 
+        firebase::database::DatabaseReference ref = m_Database->GetReference("Users");
+        firebase::Future<void> f1 = ref.Child(m_Auth->current_user()->display_name()).SetValue(GetUserId());
+        WaitForCompletion(f1, "Uploading new name");
+
         LogFirebase("FirebaseManager::Register() : Finished call.");
         return true;
     }        
@@ -189,9 +230,16 @@ bool FirebaseLib::FirebaseManager::Login()
         return false;
     }
 
-    m_DisplayName = m_Auth->current_user()->display_name();
+    // Legacy support check to update database for old users.
+    if (DoesUsernameExistAlready(m_Auth->current_user()->display_name()) == false)
+    {
+        firebase::database::DatabaseReference ref = m_Database->GetReference("Users");
+        firebase::Future<void> f1 = ref.Child(m_Auth->current_user()->display_name()).SetValue(GetUserId());
+        WaitForCompletion(f1, "Uploading new name");
+    }
 
-    //LogFirebase("FirebaseManager::Login() finished.");
+    m_DisplayName = m_Auth->current_user()->display_name();
+    LogFirebase("FirebaseManager::Login() finished.");
     return true;
 }
 
@@ -331,6 +379,15 @@ void FirebaseLib::FirebaseManager::SetupPhoneAuthentication(const char* phoneNum
     // event listening for the window. It is possible for a DLL to be attached and listen to Wnd Events, I have done
     // game engines like that in the past for input and graphical OS events. If we do it this way we also prevent
     // the code from needing a second function to act as a part two. 
+}
+
+void FirebaseLib::FirebaseManager::ChangeEmail(const char* newEmail)
+{
+    if (m_Auth->current_user()->is_anonymous() || !m_Auth->current_user()->is_email_verified()) return;
+
+    firebase::Future<void> f1 = m_Auth->current_user()->UpdateEmail(newEmail);
+    WaitForCompletion(f1, "Updating user email");
+    m_Auth->current_user()->SendEmailVerification();
 }
 
 std::string FirebaseLib::FirebaseManager::GetUserId()
