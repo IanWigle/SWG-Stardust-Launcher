@@ -71,6 +71,7 @@ namespace FirebaseLib
 		void DownloadGameUpdate(int version);
 		void DownloadGame();
 		void DownloadNewUpdater();
+		void DownloadLastGameUpdate();
 
 		inline StorageError GetLastStorageError() { return m_LastStorageError; }
 		inline std::string GetLastStorageErrorString() { return m_LastAuthErrorString; }
@@ -263,13 +264,13 @@ namespace FirebaseLib
 		{
 			return manager->DoesUsernameExistAlready(username);
 		}
-		FirebaseLib_API void FirebaseManager_TestLimitOfChildNodes(FirebaseManager* manager)
-		{
-			return manager->TestLimitOfChildNodes();
-		}
 		FirebaseLib_API void FirebaseManager_UpdateEmail(FirebaseManager* manager, const char* newEmail)
 		{
 			return manager->ChangeEmail(newEmail);
+		}
+		FirebaseLib_API void FirebaseManager_RedownloadLastUpdate(FirebaseManager* manager)
+		{
+			return manager->DownloadLastGameUpdate();
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace SWGLauncher
         public static int FirstLaunch { get; private set; }
 
         // Version Numbers
-        public const double Launcherversion = 1.8;
+        public const double Launcherversion = 2.0;
         public static double UpdaterVersion { get; set; }
         public static double GameVersion { get; private set; }
         public static double FirebaseLauncherVersion { get; private set; }
@@ -29,7 +29,7 @@ namespace SWGLauncher
         public static bool DownloadingGame = false;
 
         // Server IPs
-        public static List<IPData> IPAddresses { get; private set; }
+        public static List<IPData> IPAddresses { get; set; }
         public static IPData LastIP { get; set; }
 
         // Audio

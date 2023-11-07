@@ -1,4 +1,6 @@
-﻿namespace SWGLauncher
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SWGLauncher
 {
     internal struct IPData
     {

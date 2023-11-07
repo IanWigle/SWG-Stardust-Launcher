@@ -46,12 +46,13 @@
             groupBox1 = new GroupBox();
             RegisterEmailBox = new TextBox();
             Options = new TabPage();
+            ChangeEmail = new Button();
+            label1 = new Label();
             serverBox = new ComboBox();
             ResetPasswordButton = new Button();
             PlayMusicToggle = new CheckBox();
             pictureBox1 = new PictureBox();
-            label1 = new Label();
-            ChangeEmail = new Button();
+            DownloadLastUpdate = new Button();
             tabControl1.SuspendLayout();
             Login.SuspendLayout();
             groupBox5.SuspendLayout();
@@ -229,6 +230,7 @@
             // 
             // Options
             // 
+            Options.Controls.Add(DownloadLastUpdate);
             Options.Controls.Add(ChangeEmail);
             Options.Controls.Add(label1);
             Options.Controls.Add(serverBox);
@@ -242,6 +244,26 @@
             Options.Text = "Options";
             Options.UseVisualStyleBackColor = true;
             // 
+            // ChangeEmail
+            // 
+            ChangeEmail.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ChangeEmail.Location = new Point(55, 83);
+            ChangeEmail.Name = "ChangeEmail";
+            ChangeEmail.Size = new Size(120, 44);
+            ChangeEmail.TabIndex = 4;
+            ChangeEmail.Text = "Change Email";
+            ChangeEmail.UseVisualStyleBackColor = true;
+            ChangeEmail.Click += ChangeEmail_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(8, 39);
+            label1.Name = "label1";
+            label1.Size = new Size(39, 15);
+            label1.TabIndex = 3;
+            label1.Text = "Server";
+            // 
             // serverBox
             // 
             serverBox.FormattingEnabled = true;
@@ -254,7 +276,7 @@
             // ResetPasswordButton
             // 
             ResetPasswordButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ResetPasswordButton.Location = new Point(55, 166);
+            ResetPasswordButton.Location = new Point(55, 173);
             ResetPasswordButton.Name = "ResetPasswordButton";
             ResetPasswordButton.Size = new Size(120, 44);
             ResetPasswordButton.TabIndex = 1;
@@ -285,25 +307,16 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
-            // label1
+            // DownloadLastUpdate
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(8, 39);
-            label1.Name = "label1";
-            label1.Size = new Size(39, 15);
-            label1.TabIndex = 3;
-            label1.Text = "Server";
-            // 
-            // ChangeEmail
-            // 
-            ChangeEmail.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ChangeEmail.Location = new Point(55, 116);
-            ChangeEmail.Name = "ChangeEmail";
-            ChangeEmail.Size = new Size(120, 44);
-            ChangeEmail.TabIndex = 4;
-            ChangeEmail.Text = "Change Email";
-            ChangeEmail.UseVisualStyleBackColor = true;
-            ChangeEmail.Click += ChangeEmail_Click;
+            DownloadLastUpdate.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            DownloadLastUpdate.Location = new Point(55, 127);
+            DownloadLastUpdate.Name = "DownloadLastUpdate";
+            DownloadLastUpdate.Size = new Size(120, 44);
+            DownloadLastUpdate.TabIndex = 5;
+            DownloadLastUpdate.Text = "Download Last Update";
+            DownloadLastUpdate.UseVisualStyleBackColor = true;
+            DownloadLastUpdate.Click += DownloadLastUpdate_Click;
             // 
             // MainForm
             // 
@@ -368,5 +381,6 @@
         private ComboBox serverBox;
         private Label label1;
         private Button ChangeEmail;
+        private Button DownloadLastUpdate;
     }
 }

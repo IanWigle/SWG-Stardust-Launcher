@@ -536,6 +536,41 @@ void FirebaseLib::FirebaseManager::DownloadNewUpdater()
     LogFirebase("FirebaseManager::DownloadGameUpdate() : Finished Download");
 }
 
+void FirebaseLib::FirebaseManager::DownloadLastGameUpdate()
+{
+    firebase::database::DatabaseReference ref = m_Database->GetReference("ClientData");
+
+    firebase::Future<firebase::database::DataSnapshot> f1 =
+        ref.Child("GameVersion").GetValue();
+
+    WaitForCompletion(f1, "FirebaseManager::DownloadLastGameUpdate()");
+
+    //return f1.result()->value().bool_value();
+    int version = std::stoi(f1.result()->value().string_value());
+
+    std::string filename = m_GameUpdateString + std::to_string(version) + ".zip";
+    std::string fullpath = GetCurrentDirectoryPath() + "\\" + filename;
+
+    StorageReference fileRef = m_CloudRootReference.Child(filename);
+
+    DownloadListener listener;
+
+    Future<size_t> fileFuture = fileRef.GetFile(fullpath.c_str(), &listener, nullptr);
+    LogFirebase("FirebaseManager::DownloadLastGameUpdate() downloading " + filename);
+    WaitForCompletion(fileFuture, "FirebaseManager::DownloadLastGameUpdate()");
+
+    m_LastStorageErrorString = fileFuture.error_message();
+    m_LastStorageError = static_cast<::firebase::storage::Error>(fileFuture.error());
+
+    if (m_LastStorageError != ::firebase::storage::Error::kErrorNone)
+    {
+        LogMessage("ERROR: %s", m_LastStorageErrorString.c_str());
+        LogFirebase("FirebaseManager::DownloadLastGameUpdate() : " + std::string(fileFuture.error_message()));
+    }
+
+    LogFirebase("FirebaseManager::DownloadLastGameUpdate() : Finished Download");
+}
+
 void FirebaseLib::FirebaseManager::SetupApp()
 {
     LogFirebase("FirebaseManager::SetupApp() : Starting Firebase setup");

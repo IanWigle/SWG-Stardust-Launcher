@@ -4,6 +4,12 @@
     <Compile Update="Forms\AddServer.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\ConfirmEmailChange.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ManagerServers.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forms\PasswordResetForm.cs">
       <SubType>Form</SubType>
     </Compile>

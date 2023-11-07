@@ -8,7 +8,7 @@ namespace SWGLauncher.Forms
     /// </summary>
     public partial class MainForm : Form
     {
-        const string NEWSERVER = "New Server...";
+        const string MANAGERSERVERS = "Manager Servers...";
 
         /// <summary>
         /// Constructor.
@@ -25,8 +25,6 @@ namespace SWGLauncher.Forms
         private void RegisterAccount_Click(object sender, EventArgs e)
         {
             Program.GetFirebaseManager().LogLauncher("MainForm : RegisterAccount Event Started");
-            if (Program.GetFirebaseManager().SignedIn() == true)
-                Program.GetFirebaseManager().SignOut();
 
             string email = RegisterEmailBox.Text;
             string password = RegisterPasswordBox.Text;
@@ -385,18 +383,12 @@ namespace SWGLauncher.Forms
 
         private void serverBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if ((serverBox.SelectedItem as string) == NEWSERVER)
+            if ((serverBox.SelectedItem as string) == MANAGERSERVERS)
             {
-                AddServer addServer = new AddServer();
-                addServer.ShowDialog();
+                ManagerServers managerServers = new ManagerServers();
+                managerServers.ShowDialog();
 
-                if (addServer.Successful)
-                {
-                    IPData newServer = new IPData(addServer.ServerIP, addServer.ServerName, addServer.ServerPort);
-                    Program.IPAddresses.Add(newServer);
-                    Program.LastIP = newServer;
-                    FillServerBoxCombo();
-                }
+                FillServerBoxCombo();
             }
             else
             {
@@ -423,15 +415,33 @@ namespace SWGLauncher.Forms
                     continue;
                 }
             }
-            
-            serverBox.Items.Add(NEWSERVER);
-            //serverBox.Items.Add(MANAGERSERVERS);
+            serverBox.Items.Add(MANAGERSERVERS);
         }
 
         private void ChangeEmail_Click(object sender, EventArgs e)
         {
             ConfirmEmailChange window = new ConfirmEmailChange();
             window.ShowDialog();
+        }
+
+        private void DownloadLastUpdate_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show("Are you sure you want to re-download the last update?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(result == DialogResult.Yes)
+            {
+                Close();
+                Process process = new Process();
+                process.StartInfo.FileName = @".\Updater\SWGStardustUpdater.exe";
+                process.StartInfo.ArgumentList.Add("LastUpdate");
+                process.StartInfo.ArgumentList.Add("FromClient");
+                process.Start();
+                return;
+            }
+            else if (result == DialogResult.No)
+            {
+                return;
+            }
         }
     }
 }

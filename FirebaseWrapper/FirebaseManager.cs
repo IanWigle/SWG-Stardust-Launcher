@@ -202,6 +202,11 @@ namespace SWGLauncher
             FirebaseManager_UpdateEmail(manager, newEmail);
         }
 
+        public void RedownloadLastUpdate()
+        {
+            FirebaseManager_RedownloadLastUpdate(manager);
+        }
+
         [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr FirebaseManager_Create();
 
@@ -297,6 +302,9 @@ namespace SWGLauncher
 
         [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FirebaseManager_UpdateEmail(IntPtr value, string newEmail);
+
+        [DllImport(@"FirebaseLib.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void FirebaseManager_RedownloadLastUpdate(IntPtr value);
 
         private static IntPtr manager;
     }

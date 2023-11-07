@@ -4,6 +4,7 @@
 using SWGLauncher;
 using System.IO.Compression;
 using System.Diagnostics;
+using System.Text;
 
 partial class Program
 {
@@ -25,10 +26,8 @@ partial class Program
             manager = new FirebaseManager();
             manager.SignInAnon();
 
-            
-
             // Hard coded version for updater.
-            const double Version = 0.4;
+            const double Version = 0.5;
 
             Console.WriteLine($"Welcome to the SWG Stardust Updater! Version {Version}.");
 
@@ -38,6 +37,8 @@ partial class Program
                 DownloadUpdate();
             else if (args.Contains("Game"))
                 DownloadGame();
+            else if (args.Contains("LastUpdate"))
+                ReDownloadUpdate();
             else
             {
                 Console.WriteLine("ERROR : Missing argument to determine what to download.");
@@ -64,6 +65,36 @@ partial class Program
             if (manager != null) Console.WriteLine(manager.GetLastAuthErrorString());
             Console.ReadLine();
             if (manager != null) manager.DeleteManager();
+        }
+    }
+
+    static void ReDownloadUpdate()
+    {
+        try
+        {
+            string gameVersion = manager.GetGameVersion();
+            string strGameVersion = $"StardustUpdate{gameVersion}";
+            manager.LogUpdater($"Redownloading {strGameVersion}");
+
+            if(File.Exists($@".\{strGameVersion}.zip"))
+            {
+                File.Delete($@".\{strGameVersion}.zip");
+            }
+
+            Console.WriteLine("Downloading last update");
+            manager.RedownloadLastUpdate();
+            manager.LogUpdater("Download finished");
+
+            if (File.Exists(@"..\CustomInstructions.txt"))
+            {
+                HandleCustomInstructions();
+            }
+
+            File.Delete(@$".\{strGameVersion}.zip");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
     }
 
@@ -194,7 +225,7 @@ partial class Program
         if (File.Exists(@"..\CustomInstructions.txt"))
         {
             HandleCustomInstructions();
-    }
+        }
 
     }
 
@@ -250,7 +281,6 @@ partial class Program
             File.WriteAllLines(@"..\LauncherSettings.cfg", lines.ToArray());
         }
     }
-}
 
     static void HandleCustomInstructions()
     {
