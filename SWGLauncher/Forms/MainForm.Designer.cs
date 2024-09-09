@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             tabControl1 = new TabControl();
             Login = new TabPage();
@@ -46,13 +47,16 @@
             groupBox1 = new GroupBox();
             RegisterEmailBox = new TextBox();
             Options = new TabPage();
+            DebugStringToggle = new CheckBox();
+            DownloadLastUpdate = new Button();
             ChangeEmail = new Button();
             label1 = new Label();
             serverBox = new ComboBox();
             ResetPasswordButton = new Button();
             PlayMusicToggle = new CheckBox();
             pictureBox1 = new PictureBox();
-            DownloadLastUpdate = new Button();
+            DiscordButton = new Button();
+            randomImageTimer = new System.Windows.Forms.Timer(components);
             tabControl1.SuspendLayout();
             Login.SuspendLayout();
             groupBox5.SuspendLayout();
@@ -230,6 +234,7 @@
             // 
             // Options
             // 
+            Options.Controls.Add(DebugStringToggle);
             Options.Controls.Add(DownloadLastUpdate);
             Options.Controls.Add(ChangeEmail);
             Options.Controls.Add(label1);
@@ -243,6 +248,28 @@
             Options.TabIndex = 2;
             Options.Text = "Options";
             Options.UseVisualStyleBackColor = true;
+            // 
+            // DebugStringToggle
+            // 
+            DebugStringToggle.AutoSize = true;
+            DebugStringToggle.Location = new Point(100, 10);
+            DebugStringToggle.Name = "DebugStringToggle";
+            DebugStringToggle.Size = new Size(95, 19);
+            DebugStringToggle.TabIndex = 6;
+            DebugStringToggle.Text = "Debug String";
+            DebugStringToggle.UseVisualStyleBackColor = true;
+            DebugStringToggle.CheckedChanged += DebugStringToggle_CheckedChanged;
+            // 
+            // DownloadLastUpdate
+            // 
+            DownloadLastUpdate.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            DownloadLastUpdate.Location = new Point(55, 127);
+            DownloadLastUpdate.Name = "DownloadLastUpdate";
+            DownloadLastUpdate.Size = new Size(120, 44);
+            DownloadLastUpdate.TabIndex = 5;
+            DownloadLastUpdate.Text = "Download Last Update";
+            DownloadLastUpdate.UseVisualStyleBackColor = true;
+            DownloadLastUpdate.Click += DownloadLastUpdate_Click;
             // 
             // ChangeEmail
             // 
@@ -307,16 +334,28 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
-            // DownloadLastUpdate
+            // DiscordButton
             // 
-            DownloadLastUpdate.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            DownloadLastUpdate.Location = new Point(55, 127);
-            DownloadLastUpdate.Name = "DownloadLastUpdate";
-            DownloadLastUpdate.Size = new Size(120, 44);
-            DownloadLastUpdate.TabIndex = 5;
-            DownloadLastUpdate.Text = "Download Last Update";
-            DownloadLastUpdate.UseVisualStyleBackColor = true;
-            DownloadLastUpdate.Click += DownloadLastUpdate_Click;
+            DiscordButton.BackColor = Color.Transparent;
+            DiscordButton.BackgroundImageLayout = ImageLayout.Center;
+            DiscordButton.FlatAppearance.BorderSize = 0;
+            DiscordButton.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            DiscordButton.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            DiscordButton.FlatStyle = FlatStyle.Flat;
+            DiscordButton.ForeColor = Color.Transparent;
+            DiscordButton.Image = Properties.Resources.unfocusedDiscord;
+            DiscordButton.Location = new Point(12, 450);
+            DiscordButton.Name = "DiscordButton";
+            DiscordButton.Size = new Size(55, 55);
+            DiscordButton.TabIndex = 2;
+            DiscordButton.UseVisualStyleBackColor = false;
+            DiscordButton.Click += DiscordButton_Click;
+            DiscordButton.MouseEnter += DiscordButton_MouseEnter;
+            DiscordButton.MouseLeave += DiscordButton_MouseLeave;
+            // 
+            // randomImageTimer
+            // 
+            randomImageTimer.Interval = 20000;
             // 
             // MainForm
             // 
@@ -326,6 +365,7 @@
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(960, 517);
+            Controls.Add(DiscordButton);
             Controls.Add(tabControl1);
             Controls.Add(pictureBox1);
             FormBorderStyle = FormBorderStyle.Fixed3D;
@@ -382,5 +422,8 @@
         private Label label1;
         private Button ChangeEmail;
         private Button DownloadLastUpdate;
+        private Button DiscordButton;
+        private System.Windows.Forms.Timer randomImageTimer;
+        private CheckBox DebugStringToggle;
     }
 }

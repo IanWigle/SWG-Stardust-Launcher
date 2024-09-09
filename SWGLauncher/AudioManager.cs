@@ -45,9 +45,22 @@ namespace SWGLauncher
 
         private void OnPlaybackStopped(object sender, StoppedEventArgs eventArgs)
         {
-            if(loop && outputDevice.PlaybackState == PlaybackState.Stopped && outputDevice.DeviceNumber != -1)
+            if(loop /*&& outputDevice.PlaybackState == PlaybackState.Stopped && outputDevice.DeviceNumber != -1*/)
             {
-                outputDevice.Play();
+                outputDevice.Dispose();
+                outputDevice = null;
+                outputDevice = new WaveOutEvent();
+                try
+                {
+                    outputDevice.Init(audioFile);
+                    outputDevice.PlaybackStopped += OnPlaybackStopped;
+                    outputDevice.Volume = 0.1f;
+                    outputDevice.Play();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

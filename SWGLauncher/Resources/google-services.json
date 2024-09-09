@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1088939217652",
+    "firebase_url": "https://project-stardust-4ba76-default-rtdb.firebaseio.com",
+    "project_id": "project-stardust-4ba76",
+    "storage_bucket": "project-stardust-4ba76.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088939217652:android:5d4f24154afafbddfdc4a1",
+        "android_client_info": {
+          "package_name": "SWG.Stardust"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088939217652-lsl2dh96mhdv4mbn5ch811ab5ebg5ju3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg9oNpE-U9b0erNDnJu87DghRdzo2OMEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088939217652-lsl2dh96mhdv4mbn5ch811ab5ebg5ju3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

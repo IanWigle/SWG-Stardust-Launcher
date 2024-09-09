@@ -1,3 +1,4 @@
+using SWGLauncher.Properties;
 using System.Diagnostics;
 using System.IO.Compression;
 
@@ -10,6 +11,9 @@ namespace SWGLauncher.Forms
     {
         const string MANAGERSERVERS = "Manager Servers...";
 
+        Random randomImageGenerator;
+        string randomPictureFile;
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -20,6 +24,8 @@ namespace SWGLauncher.Forms
             this.Text = $"SWG Launcher : Version {Program.Launcherversion}";
 
             RememberMeCheckBox.Checked = Program.GetSettings().RememberLastUser;
+
+            DiscordButton.Parent = pictureBox1;
         }
 
         private void RegisterAccount_Click(object sender, EventArgs e)
@@ -71,6 +77,7 @@ namespace SWGLauncher.Forms
         {
             // Setup window graphics
             string[] files = Directory.GetFiles(@".\Resources", "*.jpg");
+            randomImageGenerator = new Random();
             if (files.Length == 0)
             {
                 Program.GetFirebaseManager().LogLauncher("MainForm : No background images found. Not risking possible crash, closing launcher.");
@@ -79,13 +86,13 @@ namespace SWGLauncher.Forms
             }
             else if (Program.GetSettings().RandomizeBackgrounds)
             {
-                Random random = new Random();
+                
 
-                string file = files[random.Next(0, files.Length)];
+                randomPictureFile = files[randomImageGenerator.Next(0, files.Length)];
 
-                pictureBox1.Image = Image.FromFile(file);
+                pictureBox1.Image = Image.FromFile(randomPictureFile);
 
-                Program.GetFirebaseManager().LogLauncher($"MainForm : Selected background image at random. Using {file}");
+                Program.GetFirebaseManager().LogLauncher($"MainForm : Selected background image at random. Using {randomPictureFile}");
             }
             else if (Program.GetSettings().SpecificImage > files.Length || Program.GetSettings().SpecificImage < 0)
             {
@@ -123,6 +130,16 @@ namespace SWGLauncher.Forms
                 MessageBox.Show("Stardust is currently under maintenance. Please come back later. Check out updates on the Stardust Discord.", "Notice!", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
                 Close();
                 return;
+            }
+
+            // Setup debug string box
+            if (Program.GetSettings().EnableDebugString)
+            {
+                DebugStringToggle.Checked = true;
+            }
+            else
+            {
+                DebugStringToggle.Checked = false;
             }
 
             // Check if we have the game files. If we do not, ask to download
@@ -260,6 +277,25 @@ namespace SWGLauncher.Forms
 
             // Get all registered servers.
             FillServerBoxCombo();
+
+            randomImageTimer.Tick += RandomImageTimer_Tick;
+            randomImageTimer.Start();
+        }
+
+        private void RandomImageTimer_Tick(object? sender, EventArgs e)
+        {
+            do
+            {
+                string[] files = Directory.GetFiles(@".\Resources", "*.jpg");
+                string randomFile = files[randomImageGenerator.Next(0, files.Length)];
+                if (randomFile != randomPictureFile)
+                {
+                    pictureBox1.Image = Image.FromFile(randomFile);
+                    randomPictureFile = randomFile;
+                    break;
+                }
+            } while (true);
+            randomImageTimer.Start();
         }
 
         private void LoginButton_Click(object sender, EventArgs e)
@@ -319,6 +355,9 @@ namespace SWGLauncher.Forms
                     }
 
                     strings[17] = $"{strings[17]}{username}";
+
+                    strings[23] = $"    debugStringIds={Program.GetSettings().EnableDebugString}";
+
                     File.WriteAllLines(@".\user.cfg", strings);
                     Process process = new Process();
                     process.StartInfo.FileName = @".\SwgClient_r.exe";
@@ -428,7 +467,7 @@ namespace SWGLauncher.Forms
         {
             var result = MessageBox.Show("Are you sure you want to re-download the last update?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if(result == DialogResult.Yes)
+            if (result == DialogResult.Yes)
             {
                 Close();
                 Process process = new Process();
@@ -441,6 +480,36 @@ namespace SWGLauncher.Forms
             else if (result == DialogResult.No)
             {
                 return;
+            }
+        }
+
+        private void DiscordButton_Click(object sender, EventArgs e)
+        {
+            Process process = new Process();
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.FileName = Resources.discordLink;
+            process.Start();
+        }
+
+        private void DiscordButton_MouseEnter(object sender, EventArgs e)
+        {
+            DiscordButton.Image = Resources.focusedDiscord;
+        }
+
+        private void DiscordButton_MouseLeave(object sender, EventArgs e)
+        {
+            DiscordButton.Image = Resources.unfocusedDiscord;
+        }
+
+        private void DebugStringToggle_CheckedChanged(object sender, EventArgs e)
+        {
+            if (DebugStringToggle.Checked)
+            {
+                Program.GetSettings().EnableDebugString = true;
+            }
+            else
+            {
+                Program.GetSettings().EnableDebugString = false;
             }
         }
     }

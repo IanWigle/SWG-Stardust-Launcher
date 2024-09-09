@@ -61,6 +61,51 @@ namespace SWGLauncher.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to https://discord.gg/UFQACtzed8.
+        /// </summary>
+        internal static string discordLink {
+            get {
+                return ResourceManager.GetString("discordLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap focusedDiscord {
+            get {
+                object obj = ResourceManager.GetObject("focusedDiscord", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;project_info&quot;: {
+        ///    &quot;project_number&quot;: &quot;1088939217652&quot;,
+        ///    &quot;firebase_url&quot;: &quot;https://project-stardust-4ba76-default-rtdb.firebaseio.com&quot;,
+        ///    &quot;project_id&quot;: &quot;project-stardust-4ba76&quot;,
+        ///    &quot;storage_bucket&quot;: &quot;project-stardust-4ba76.appspot.com&quot;
+        ///  },
+        ///  &quot;client&quot;: [
+        ///    {
+        ///      &quot;client_info&quot;: {
+        ///        &quot;mobilesdk_app_id&quot;: &quot;1:1088939217652:android:5d4f24154afafbddfdc4a1&quot;,
+        ///        &quot;android_client_info&quot;: {
+        ///          &quot;package_name&quot;: &quot;SWG.Stardust&quot;
+        ///        }
+        ///      },
+        ///      &quot;oauth_client&quot;: [
+        ///        {
+        ///          &quot;cl [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string google_services {
+            get {
+                return ResourceManager.GetString("google_services", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Project_Stardust {
@@ -76,6 +121,16 @@ namespace SWGLauncher.Properties {
         internal static System.Drawing.Bitmap swg_stardust_logo {
             get {
                 object obj = ResourceManager.GetObject("swg_stardust_logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap unfocusedDiscord {
+            get {
+                object obj = ResourceManager.GetObject("unfocusedDiscord", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

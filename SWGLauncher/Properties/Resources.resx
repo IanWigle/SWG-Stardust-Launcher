@@ -118,10 +118,61 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="swg_stardust_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\swg_stardust_logo.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Project_Stardust" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Project_Stardust.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="swg_stardust_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\swg_stardust_logo.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="focusedDiscord" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\focusedDiscord.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="discordLink" xml:space="preserve">
+    <value>https://discord.gg/UFQACtzed8</value>
+  </data>
+  <data name="google_services" xml:space="preserve">
+    <value>{
+  "project_info": {
+    "project_number": "1088939217652",
+    "firebase_url": "https://project-stardust-4ba76-default-rtdb.firebaseio.com",
+    "project_id": "project-stardust-4ba76",
+    "storage_bucket": "project-stardust-4ba76.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088939217652:android:5d4f24154afafbddfdc4a1",
+        "android_client_info": {
+          "package_name": "SWG.Stardust"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088939217652-lsl2dh96mhdv4mbn5ch811ab5ebg5ju3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg9oNpE-U9b0erNDnJu87DghRdzo2OMEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088939217652-lsl2dh96mhdv4mbn5ch811ab5ebg5ju3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}</value>
+  </data>
+  <data name="unfocusedDiscord" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\unfocusedDiscord.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

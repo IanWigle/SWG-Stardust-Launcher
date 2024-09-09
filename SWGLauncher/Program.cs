@@ -18,7 +18,7 @@ namespace SWGLauncher
         public static int FirstLaunch { get; private set; }
 
         // Version Numbers
-        public const double Launcherversion = 2.0;
+        public const double Launcherversion = 2.1;
         public static double UpdaterVersion { get; set; }
         public static double GameVersion { get; private set; }
         public static double FirebaseLauncherVersion { get; private set; }
@@ -44,10 +44,16 @@ namespace SWGLauncher
             if(args.Contains("FromUpdater"))
                 Directory.SetCurrentDirectory(@"..\");
 
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            //if(File.Exists(@".\google-services.json"))
+            //{
+            //    FileStream file = File.Create(@".\google-services.json");
+            //    string serv = SWGLauncher.Properties.Resources.google_services;
+            //    file.Write(Encoding.ASCII.GetBytes(serv));
+            //}
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             ApplicationConfiguration.Initialize();
 
             if (!Directory.Exists(@".\Logs"))
@@ -90,41 +96,56 @@ namespace SWGLauncher
                 bool enableSound = false;
                 bool randomBackgrounds = false;
                 bool rememberUser = false;
+                bool enableDebugString = false;
                 int specImage = 0;
                 string lastEmail = "";
 
-                string[] lines = File.ReadAllLines(@".\LauncherSettings.cfg");
+                string[] launcher_prop_lines = File.ReadAllLines(@".\LauncherSettings.cfg");
+                string[] user_prop_lines = File.ReadAllLines(@".\user.cfg");
 
-                if(lines.Length < 0)
+                if(launcher_prop_lines.Length < 0)
                 {
                     firebase.LogLauncher("Program : LauncherSettings file was empty, resorting to default settings.");
                     programSettings = new ProgramSettings();
                     return;
                 }
+                else if(user_prop_lines.Length < 0)
+                {
+                    firebase.LogLauncher("Program: user.cfg file was empty, May cause problems.");
+                }
 
                 try
                 {
-                    enableSound = Convert.ToBoolean(lines[0].Split(':')[1]);
-                    randomBackgrounds = Convert.ToBoolean(lines[1].Split(':')[1]);
-                    specImage = Convert.ToInt32(lines[2].Split(':')[1]);
-                    rememberUser = Convert.ToBoolean(lines[3].Split(':')[1]);
-                    lastEmail = (lines[4].Split(':').Length > 1) ? Convert.ToString(lines[4].Split(':')[1]) : "";
-                    GameVersion = Convert.ToDouble(lines[5].Split(':')[1]);
-                    FirstLaunch = Convert.ToInt32(lines[6].Split(':')[1]);
-                    UpdaterVersion = Convert.ToDouble(lines[7].Split(':')[1]);
+                    enableSound = Convert.ToBoolean(launcher_prop_lines[0].Split(':')[1]);
+                    randomBackgrounds = Convert.ToBoolean(launcher_prop_lines[1].Split(':')[1]);
+                    specImage = Convert.ToInt32(launcher_prop_lines[2].Split(':')[1]);
+                    rememberUser = Convert.ToBoolean(launcher_prop_lines[3].Split(':')[1]);
+                    lastEmail = (launcher_prop_lines[4].Split(':').Length > 1) ? Convert.ToString(launcher_prop_lines[4].Split(':')[1]) : "";
+                    GameVersion = Convert.ToDouble(launcher_prop_lines[5].Split(':')[1]);
+                    FirstLaunch = Convert.ToInt32(launcher_prop_lines[6].Split(':')[1]);
+                    UpdaterVersion = Convert.ToDouble(launcher_prop_lines[7].Split(':')[1]);
                 }
                 catch(Exception ex)
                 {
                     firebase.LogLauncher("Program : There was a problem with the LauncherSettings, loading default settings into launcher.");
                     firebase.LogLauncher($"Program : {ex.Message}");
 
-                    programSettings = new ProgramSettings();
                     GameVersion = 1;
                     FirstLaunch = 0;
                     UpdaterVersion = 0.1;
                 }
 
-                programSettings = new ProgramSettings(enableSound, randomBackgrounds, specImage, rememberUser, lastEmail);
+                try
+                {
+                    enableDebugString = Convert.ToBoolean(user_prop_lines[23].Split('=')[1]);
+                }
+                catch(Exception ex)
+                {
+                    firebase.LogLauncher("Program : There was a problem with the user.cfg, loading default settings into launcher.");
+                    firebase.LogLauncher($"Program : {ex.Message}");
+                }
+
+                programSettings = new ProgramSettings(enableSound, randomBackgrounds, specImage, rememberUser, lastEmail, enableDebugString);
             }
             else
             {
@@ -152,18 +173,18 @@ namespace SWGLauncher
                         IPAddresses.Add(new IPData(serverBits[1], serverBits[0], int.Parse(serverBits[2])));
                 }
             }
-            else if (File.Exists(@".\login.cfg"))
-            {
-                string[] lines = File.ReadAllLines(@".\login.cfg");
+            //else if (File.Exists(@".\login.cfg"))
+            //{
+            //    string[] lines = File.ReadAllLines(@".\login.cfg");
 
-                // We're looking for line 9 (8 in code)
-                string lastLine = lines[lines.Length - 1];
+            //    // We're looking for line 9 (8 in code)
+            //    string lastLine = lines[lines.Length - 1];
 
-                // Seperate ip numbers from text property by splitting string by the '=' symbol
-                string ip = lastLine.Split('=')[1];
+            //    // Seperate ip numbers from text property by splitting string by the '=' symbol
+            //    string ip = lastLine.Split('=')[1];
 
-                IPAddresses.Add(new IPData(ip, "DS-II"));
-            }
+            //    IPAddresses.Add(new IPData(ip, "DS-II"));
+            //}
         }
 
         public static void SaveSettings()
